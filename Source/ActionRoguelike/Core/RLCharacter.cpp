@@ -2,6 +2,7 @@
 
 #include "RLCharacter.h"
 
+#include "ActionRoguelike/ActorComponents/RLInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -17,6 +18,8 @@ ARLCharacter::ARLCharacter()
 	
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	InteractionComponent = CreateDefaultSubobject<URLInteractionComponent>("InteractionComponent");
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
@@ -48,7 +51,11 @@ void ARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	//Actions
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ARLCharacter::PrimaryAttack);
+
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ARLCharacter::PrimaryInteract);
 }
 
 void ARLCharacter::MoveForward(float Value)
@@ -73,6 +80,14 @@ void ARLCharacter::MoveRight(float Value)
 
 void ARLCharacter::PrimaryAttack()
 {
+	PlayAnimMontage(AttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ARLCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+	//GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);
+}
+
+void ARLCharacter::PrimaryAttack_TimeElapsed()
+{
 	FVector PrimaryHandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	FTransform SpawnTransform = FTransform(GetControlRotation(), PrimaryHandLocation);
 	
@@ -81,6 +96,12 @@ void ARLCharacter::PrimaryAttack()
 	
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
 }
+
+void ARLCharacter::PrimaryInteract()
+{
+	InteractionComponent->PrimaryInteract();
+}
+
 
 
 

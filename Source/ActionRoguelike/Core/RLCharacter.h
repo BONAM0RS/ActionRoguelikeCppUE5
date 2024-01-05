@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RLCharacter.generated.h"
 
+class URLInteractionComponent;
 class UCameraComponent;
 class USpringArmComponent;
 
@@ -30,6 +31,9 @@ protected:
 	void MoveRight(float Value);
 
 	void PrimaryAttack();
+	void PrimaryAttack_TimeElapsed();
+
+	void PrimaryInteract();
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -39,6 +43,14 @@ protected:
 	UCameraComponent* CameraComponent;
 
 	UPROPERTY(EditDefaultsOnly)
+	URLInteractionComponent* InteractionComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	UAnimMontage* AttackAnim;
+
+	FTimerHandle TimerHandle_PrimaryAttack;
 
 };
