@@ -20,19 +20,25 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	void MoveForward(float Value);
-
-protected:
-	UPROPERTY(VisibleAnywhere)
-	USpringArmComponent* SpringArmComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* CameraComponent;
-
 public:	
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
+	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+protected:
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+
+	void PrimaryAttack();
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	USpringArmComponent* SpringArmComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	UCameraComponent* CameraComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> ProjectileClass;
 
 };
