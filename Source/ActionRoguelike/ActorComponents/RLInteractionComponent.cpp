@@ -26,8 +26,6 @@ void URLInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 void URLInteractionComponent::PrimaryInteract()
 {
-	
-
 	AActor* Owner = GetOwner();
 	FVector ViewPointLocation;
 	FRotator ViewPointRotation;
@@ -73,7 +71,7 @@ void URLInteractionComponent::PrimaryInteract()
 				break;
 			}
 		}
-
+		
 		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
 	}
 	

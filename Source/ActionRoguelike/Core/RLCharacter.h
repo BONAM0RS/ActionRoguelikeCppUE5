@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RLCharacter.generated.h"
 
+class ARLProjectileBase;
 class URLInteractionComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -33,24 +34,47 @@ protected:
 	void PrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
 
+	void DashAttack();
+	void DashAttack_TimeElapsed();
+
+	void BlackHoleAttack();
+	void BlackHoleAttack_TimeElapsed();
+
+	void SpawnProjectile(TSubclassOf<AActor> ProjectileClassToSpawn);
+	FVector CalculateProjectileTargetPoint();
+
 	void PrimaryInteract();
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	USpringArmComponent* SpringArmComponent;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UCameraComponent* CameraComponent;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	URLInteractionComponent* InteractionComponent;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Projectile Classes")
+	TSubclassOf<ARLProjectileBase> PrimaryProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Attack")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Projectile Classes")
+	TSubclassOf<ARLProjectileBase> DashProjectileClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Projectile Classes")
+	TSubclassOf<ARLProjectileBase> BlackHoleProjectileClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Animation Montages")
 	UAnimMontage* AttackAnim;
 
-	FTimerHandle TimerHandle_PrimaryAttack;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Animation Montages")
+	float AttackAnimDelay;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Projectile Target Point Trace")
+	float TraceLength;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Projectile Target Point Trace")
+	float TraceSphereRadius;
+
+	FTimerHandle TimerHandle_PrimaryAttack;
 };

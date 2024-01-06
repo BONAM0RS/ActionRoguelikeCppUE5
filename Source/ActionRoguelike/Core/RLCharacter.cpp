@@ -2,6 +2,7 @@
 
 #include "RLCharacter.h"
 
+#include "ActionRoguelike/RLProjectileBase.h"
 #include "ActionRoguelike/ActorComponents/RLInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -24,12 +25,17 @@ ARLCharacter::ARLCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 	bUseControllerRotationYaw = false;
+
+	AttackAnimDelay = 0.2f;
+
+	TraceLength = 5000.f;
+	TraceSphereRadius = 20.f;
 }
 
 void ARLCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 void ARLCharacter::Tick(float DeltaTime)
@@ -54,6 +60,8 @@ void ARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ARLCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("DashAttack", IE_Pressed, this, &ARLCharacter::DashAttack);
+	PlayerInputComponent->BindAction("BlackHoleAttack", IE_Pressed, this, &ARLCharacter::BlackHoleAttack);
 
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ARLCharacter::PrimaryInteract);
 }
@@ -81,21 +89,78 @@ void ARLCharacter::MoveRight(float Value)
 void ARLCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ARLCharacter::PrimaryAttack_TimeElapsed, 0.2f);
-	//GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ARLCharacter::PrimaryAttack_TimeElapsed, AttackAnimDelay);
 }
 
 void ARLCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector PrimaryHandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	FTransform SpawnTransform = FTransform(GetControlRotation(), PrimaryHandLocation);
+	SpawnProjectile(PrimaryProjectileClass);
+}
+
+void ARLCharacter::DashAttack()
+{
+	PlayAnimMontage(AttackAnim);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ARLCharacter::DashAttack_TimeElapsed, AttackAnimDelay);
+}
+
+void ARLCharacter::DashAttack_TimeElapsed()
+{
+	SpawnProjectile(DashProjectileClass);
+}
+
+void ARLCharacter::BlackHoleAttack()
+{
+	PlayAnimMontage(AttackAnim);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ARLCharacter::BlackHoleAttack_TimeElapsed, AttackAnimDelay);
+}
+
+void ARLCharacter::BlackHoleAttack_TimeElapsed()
+{
+	SpawnProjectile(BlackHoleProjectileClass);
+}
+
+void ARLCharacter::SpawnProjectile(TSubclassOf<AActor> ProjectileClassToSpawn)
+{
+	if (ensureAlways(ProjectileClassToSpawn))
+	{
+		FVector ProjectileTargetPoint = CalculateProjectileTargetPoint();
+		
+		FVector PrimaryHandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+		FRotator RotatorToTargetPoint = FRotationMatrix::MakeFromX(ProjectileTargetPoint - PrimaryHandLocation).Rotator();
+		FTransform SpawnTransform = FTransform(RotatorToTargetPoint, PrimaryHandLocation);
+		
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
+		
+		GetWorld()->SpawnActor<AActor>(ProjectileClassToSpawn, SpawnTransform, SpawnParams);
+	}
+}
+
+FVector ARLCharacter::CalculateProjectileTargetPoint()
+{
+	FVector TraceStart = CameraComponent->GetComponentLocation();
+	FVector TraceEnd = TraceStart + (GetControlRotation().Vector() * TraceLength);
+
+	FCollisionObjectQueryParams CollisionObjectQueryParams;
+	CollisionObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	CollisionObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	CollisionObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+	FCollisionShape CollisionShape;
+	CollisionShape.SetSphere(TraceSphereRadius);
+
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(this);
+		
+	FHitResult HitResult;
+	bool bHitSuccess = GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity,
+												CollisionObjectQueryParams, CollisionShape, CollisionQueryParams);
+	if (bHitSuccess) {
+		return HitResult.ImpactPoint;
+	}
 	
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-	
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+	return TraceEnd;
 }
 
 void ARLCharacter::PrimaryInteract()

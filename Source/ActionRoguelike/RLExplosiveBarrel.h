@@ -17,6 +17,7 @@ public:
 	ARLExplosiveBarrel();
 
 protected:
+	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 
 public:	
@@ -24,7 +25,7 @@ public:
 
 protected:
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	void OnMeshComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		FVector NormalImpulse, const FHitResult& Hit);
 
 protected:
