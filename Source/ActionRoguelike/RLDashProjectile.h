@@ -18,6 +18,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	// Base class using BlueprintNativeEvent, so we must override the _Implementation, not just Explode()
 	virtual void Explode_Implementation() override;
 
 	void TeleportInstigator();

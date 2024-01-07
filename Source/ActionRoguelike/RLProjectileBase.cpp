@@ -20,10 +20,12 @@ ARLProjectileBase::ARLProjectileBase()
 	ParticleSystemComponent->SetupAttachment(SphereComponent);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
-	ProjectileMovementComponent->InitialSpeed = 8000.0f;
+	ProjectileMovementComponent->InitialSpeed = 4000.0f;
 	ProjectileMovementComponent->ProjectileGravityScale = 0.f;
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bInitialVelocityInLocalSpace = true;
+
+	InitialLifeSpan = 15.f;
 }
 
 void ARLProjectileBase::BeginPlay()
@@ -35,7 +37,8 @@ void ARLProjectileBase::BeginPlay()
 void ARLProjectileBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	SphereComponent->OnComponentHit.AddDynamic(this, &ARLProjectileBase::ARLProjectileBase::OnSphereComponentHit);
+	SphereComponent->OnComponentHit.AddDynamic(this, &ARLProjectileBase::OnSphereComponentHit);
+	
 }
 
 void ARLProjectileBase::Tick(float DeltaTime)
@@ -57,7 +60,8 @@ void ARLProjectileBase::Explode_Implementation()
 		if (ImpactVFX != nullptr) {
 			UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
 		}
-	
+
+		UE_LOG(LogTemp,Warning,TEXT("%S"), __FUNCTION__);
 		Destroy();
 	}
 }

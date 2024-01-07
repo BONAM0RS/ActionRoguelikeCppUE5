@@ -3,6 +3,7 @@
 #include "RLCharacter.h"
 
 #include "ActionRoguelike/RLProjectileBase.h"
+#include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "ActionRoguelike/ActorComponents/RLInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -21,6 +22,7 @@ ARLCharacter::ARLCharacter()
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
 	InteractionComponent = CreateDefaultSubobject<URLInteractionComponent>("InteractionComponent");
+	AttributeComponent = CreateDefaultSubobject<URLAttributeComponent>("AttributeComponent");
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	

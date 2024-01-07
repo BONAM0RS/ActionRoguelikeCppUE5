@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RLCharacter.generated.h"
 
+class URLAttributeComponent;
 class ARLProjectileBase;
 class URLInteractionComponent;
 class UCameraComponent;
@@ -54,6 +55,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	URLInteractionComponent* InteractionComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	URLAttributeComponent* AttributeComponent;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Projectile Classes")
 	TSubclassOf<ARLProjectileBase> PrimaryProjectileClass;

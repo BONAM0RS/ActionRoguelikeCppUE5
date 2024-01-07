@@ -23,6 +23,7 @@ void ARLDashProjectile::BeginPlay()
 
 void ARLDashProjectile::Explode_Implementation()
 {
+	// clear timer in case projectile hit something
 	GetWorldTimerManager().ClearTimer(TimerHandle_DelayedDetonate);
 
 	if (ensure(ImpactVFX)) {
@@ -44,5 +45,6 @@ void ARLDashProjectile::TeleportInstigator()
 	if (ensure(ActorToTeleport))
 	{
 		ActorToTeleport->TeleportTo(GetActorLocation(), ActorToTeleport->GetActorRotation(), false, false);
+		Destroy();
 	}
 }
