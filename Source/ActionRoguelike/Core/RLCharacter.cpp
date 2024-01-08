@@ -40,6 +40,12 @@ void ARLCharacter::BeginPlay()
 
 }
 
+void ARLCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	AttributeComponent->OnHealthChanged.AddDynamic(this, &ARLCharacter::OnHealthChanged);
+}
+
 void ARLCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -168,6 +174,15 @@ FVector ARLCharacter::CalculateProjectileTargetPoint()
 void ARLCharacter::PrimaryInteract()
 {
 	InteractionComponent->PrimaryInteract();
+}
+
+void ARLCharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	if (NewHealth <= 0.0f && Delta < 0.0f)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		DisableInput(PlayerController);
+	}
 }
 
 

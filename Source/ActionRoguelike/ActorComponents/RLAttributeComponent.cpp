@@ -19,3 +19,10 @@ bool URLAttributeComponent::ApplyHealthChange(float Delta)
 	return true;
 }
 
+bool URLAttributeComponent::IsAlive() const
+{
+	return Health > 0.0f;
+}
+
+
+

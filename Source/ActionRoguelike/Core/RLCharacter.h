@@ -22,8 +22,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-public:	
+	virtual void PostInitializeComponents() override;
+	
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -45,6 +45,9 @@ protected:
 	FVector CalculateProjectileTargetPoint();
 
 	void PrimaryInteract();
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
