@@ -8,6 +8,7 @@ public class ActionRoguelike : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
+		// "AIModule" auto added in ActionRoguelike.uproject file and looks like you don't need to add "GameplayTasks" for BTService
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
