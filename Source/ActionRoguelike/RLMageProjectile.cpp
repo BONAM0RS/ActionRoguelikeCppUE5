@@ -32,7 +32,7 @@ void ARLMageProjectile::OnSphereComponentBeginOverlap(UPrimitiveComponent* Overl
 			URLAttributeComponent* AttributeComponent = Cast<URLAttributeComponent>(FoundActorComponent);
 			AttributeComponent->ApplyHealthChange(-20.f);
 
-			UE_LOG(LogTemp,Warning,TEXT("%S"), __FUNCTION__);
+			//UE_LOG(LogTemp,Warning,TEXT("%S"), __FUNCTION__);
 			Explode();
 		}
 	}

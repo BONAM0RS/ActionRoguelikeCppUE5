@@ -61,7 +61,7 @@ void ARLProjectileBase::Explode_Implementation()
 			UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
 		}
 
-		UE_LOG(LogTemp,Warning,TEXT("%S"), __FUNCTION__);
+		//UE_LOG(LogTemp,Warning,TEXT("%S"), __FUNCTION__);
 		Destroy();
 	}
 }

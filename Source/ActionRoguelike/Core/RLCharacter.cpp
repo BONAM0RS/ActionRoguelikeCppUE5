@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 ARLCharacter::ARLCharacter()
@@ -29,9 +30,14 @@ ARLCharacter::ARLCharacter()
 	bUseControllerRotationYaw = false;
 
 	AttackAnimDelay = 0.2f;
-
+	
+	HideDamageHitEffectDelay = 0.2f;
+	
 	TraceLength = 5000.f;
 	TraceSphereRadius = 20.f;
+
+	PrimaryHandSocketName = "Muzzle_01";
+	HitDamageParamName = "Damage";
 }
 
 void ARLCharacter::BeginPlay()
@@ -96,7 +102,7 @@ void ARLCharacter::MoveRight(float Value)
 
 void ARLCharacter::PrimaryAttack()
 {
-	PlayAnimMontage(AttackAnim);
+	StartAttackEffect();
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ARLCharacter::PrimaryAttack_TimeElapsed, AttackAnimDelay);
 }
 
@@ -107,7 +113,7 @@ void ARLCharacter::PrimaryAttack_TimeElapsed()
 
 void ARLCharacter::DashAttack()
 {
-	PlayAnimMontage(AttackAnim);
+	StartAttackEffect();
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ARLCharacter::DashAttack_TimeElapsed, AttackAnimDelay);
 }
 
@@ -118,7 +124,7 @@ void ARLCharacter::DashAttack_TimeElapsed()
 
 void ARLCharacter::BlackHoleAttack()
 {
-	PlayAnimMontage(AttackAnim);
+	StartAttackEffect();
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ARLCharacter::BlackHoleAttack_TimeElapsed, AttackAnimDelay);
 }
 
@@ -127,13 +133,21 @@ void ARLCharacter::BlackHoleAttack_TimeElapsed()
 	SpawnProjectile(BlackHoleProjectileClass);
 }
 
+void ARLCharacter::StartAttackEffect()
+{
+	PlayAnimMontage(AttackAnim);
+
+	UGameplayStatics::SpawnEmitterAttached(CastingEffect, GetMesh(), PrimaryHandSocketName,
+		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
+}
+
 void ARLCharacter::SpawnProjectile(TSubclassOf<AActor> ProjectileClassToSpawn)
 {
 	if (ensureAlways(ProjectileClassToSpawn))
 	{
 		FVector ProjectileTargetPoint = CalculateProjectileTargetPoint();
 		
-		FVector PrimaryHandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+		FVector PrimaryHandLocation = GetMesh()->GetSocketLocation(PrimaryHandSocketName);
 		FRotator RotatorToTargetPoint = FRotationMatrix::MakeFromX(ProjectileTargetPoint - PrimaryHandLocation).Rotator();
 		FTransform SpawnTransform = FTransform(RotatorToTargetPoint, PrimaryHandLocation);
 		
@@ -178,11 +192,33 @@ void ARLCharacter::PrimaryInteract()
 
 void ARLCharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	if (NewHealth <= 0.0f && Delta < 0.0f)
+	if (Delta >= 0.0f) {
+		return;
+	}
+
+	// Is Damaged
+	if (Delta < 0.0f)
+	{
+		float ParameterValue = FMath::Abs(Delta) / AttributeComponent->GetMaxHealth();
+		UE_LOG(LogTemp,Warning,TEXT("%S: ParameterValue = %f"), __FUNCTION__, ParameterValue);
+		GetMesh()->SetScalarParameterValueOnMaterials(HitDamageParamName, ParameterValue);
+
+		FTimerHandle TimerHandle_HideHitDamageEffect;
+		GetWorldTimerManager().SetTimer(TimerHandle_HideHitDamageEffect, this, &ARLCharacter::HideHitDamageEffect, HideDamageHitEffectDelay);
+	}
+	
+	// Is Dead
+	if (NewHealth <= 0.0f)
 	{
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		DisableInput(PlayerController);
 	}
+}
+
+void ARLCharacter::HideHitDamageEffect()
+{
+	GetMesh()->SetScalarParameterValueOnMaterials(HitDamageParamName, 0.0f);
+	UE_LOG(LogTemp,Warning,TEXT("%S:"), __FUNCTION__);
 }
 
 

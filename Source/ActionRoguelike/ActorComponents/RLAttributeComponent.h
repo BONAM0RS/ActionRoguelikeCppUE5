@@ -7,7 +7,7 @@
 #include "RLAttributeComponent.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, URLAttributeComponent*, OwningComponent, float, NewHalth, float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, URLAttributeComponent*, OwningComponent, float, NewHealth, float, Delta);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -23,13 +23,26 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute Component")
 	bool IsAlive() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute Component")
+	bool IsFullHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute Component")
+	float GetMaxHealth() const;
 	
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
 protected:
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	float MaxHealth;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	float CurrentHealth;
+	
+	// Stamina, Strength etc...
+	
 	// EditAnywhere - edit in BP editor and per-instance in level
 	// VisibleAnywhere - read-only in editor and level (use for components)
 	// EditDefaultsOnly - hide variable per-instance, edit in BP editor only
@@ -37,11 +50,4 @@ protected:
 	// EditInstanceOnly - allow only editing of instance (eg. when placed in level)
 	// BlueprintReadOnly - read-only in BP scripting (does not effect details panel)
 	// BlueprintReadWrite - read-write access in BP
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
-	float Health;
-
-	// HealthMax, Stamina, Strength etc...
-
-	
 };

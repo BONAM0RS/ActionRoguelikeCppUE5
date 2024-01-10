@@ -41,6 +41,8 @@ protected:
 	void BlackHoleAttack();
 	void BlackHoleAttack_TimeElapsed();
 
+	void StartAttackEffect();
+
 	void SpawnProjectile(TSubclassOf<AActor> ProjectileClassToSpawn);
 	FVector CalculateProjectileTargetPoint();
 
@@ -48,6 +50,8 @@ protected:
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	void HideHitDamageEffect();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -61,27 +65,40 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	URLAttributeComponent* AttributeComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Names")
+	FName PrimaryHandSocketName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Names")
+	FName HitDamageParamName;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Projectile Classes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Projectile Classes")
 	TSubclassOf<ARLProjectileBase> PrimaryProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Projectile Classes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Projectile Classes")
 	TSubclassOf<ARLProjectileBase> DashProjectileClass;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Projectile Classes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Projectile Classes")
 	TSubclassOf<ARLProjectileBase> BlackHoleProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Effects")
+	UParticleSystem* CastingEffect;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Animation Montages")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Animation Montages")
 	UAnimMontage* AttackAnim;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Animation Montages")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Animation Montages")
 	float AttackAnimDelay;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Projectile Target Point Trace")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Effects")
+	float HideDamageHitEffectDelay;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Projectile Target Point Trace")
 	float TraceLength;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Attack | Projectile Target Point Trace")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Projectile Target Point Trace")
 	float TraceSphereRadius;
-
+	
 	FTimerHandle TimerHandle_PrimaryAttack;
+	
 };

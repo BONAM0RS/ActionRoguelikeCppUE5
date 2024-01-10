@@ -7,21 +7,34 @@ URLAttributeComponent::URLAttributeComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	Health = 100.f;
+	MaxHealth = 100.f;
+	CurrentHealth = MaxHealth;
 }
 
 bool URLAttributeComponent::ApplyHealthChange(float Delta)
 {
-	Health += Delta;
+	float OldCurrentHealth = CurrentHealth;
+	CurrentHealth = FMath::Clamp(CurrentHealth + Delta, 0.0f, MaxHealth);
+	float RealDelta = CurrentHealth - OldCurrentHealth;
 
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
+	OnHealthChanged.Broadcast(nullptr, this, CurrentHealth, RealDelta);
 	
-	return true;
+	return RealDelta != 0.0f;
 }
 
 bool URLAttributeComponent::IsAlive() const
 {
-	return Health > 0.0f;
+	return CurrentHealth > 0.0f;
+}
+
+bool URLAttributeComponent::IsFullHealth() const
+{
+	return CurrentHealth == MaxHealth;
+}
+
+float URLAttributeComponent::GetMaxHealth() const
+{
+	return MaxHealth;
 }
 
 
