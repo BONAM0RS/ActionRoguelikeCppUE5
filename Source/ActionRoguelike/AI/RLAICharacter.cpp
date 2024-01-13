@@ -10,6 +10,8 @@
 ARLAICharacter::ARLAICharacter()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ARLAICharacter::PostInitializeComponents()
