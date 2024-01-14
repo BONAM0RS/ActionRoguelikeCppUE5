@@ -5,7 +5,9 @@
 #include "AIController.h"
 #include "BrainComponent.h"
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
+#include "ActionRoguelike/UI/RLWorldUserWidget.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Perception/PawnSensingComponent.h"
 
 
@@ -22,6 +24,8 @@ ARLAICharacter::ARLAICharacter()
 	HideDamageHitEffectDelay = 0.2f;
 
 	DamageAmount = 5.f;
+
+	ActiveHealthBarWidget = nullptr;
 }
 
 void ARLAICharacter::PostInitializeComponents()
@@ -54,7 +58,7 @@ void ARLAICharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeCompon
 		return;
 	}
 	SetTargetActor(InstigatorActor); // if AI damage another AI it will set target AI for AI
-
+	
 	// we wanna be sure we take any damage
 	// I think there are should be 2 function, like Damage & Heal based on Delta
 	if (Delta >= 0.0f) {
@@ -64,6 +68,17 @@ void ARLAICharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeCompon
 	// Is Damaged
 	if (Delta < 0.0f)
 	{
+		if (ActiveHealthBarWidget == nullptr)
+		{
+			ActiveHealthBarWidget = CreateWidget<URLWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+			if (ActiveHealthBarWidget != nullptr)
+			{
+				ActiveHealthBarWidget->AttachedActor = this;
+				ActiveHealthBarWidget->AddToViewport();
+				ActiveHealthBarWidget->CustomInitialize();
+			}
+		}
+		
 		float ParameterValue = FMath::Abs(Delta) / AttributeComponent->GetMaxHealth();
 		//UE_LOG(LogTemp,Warning,TEXT("%S: ParameterValue = %f"), __FUNCTION__, ParameterValue);
 		GetMesh()->SetScalarParameterValueOnMaterials(HitDamageParamName, ParameterValue);
@@ -75,6 +90,8 @@ void ARLAICharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeCompon
 	// Is Dead
 	if (NewHealth <= 0.0f)
 	{
+		//ActiveHealthBarWidget->RemoveFromParent(); //maybe it should be here, but im not sure
+		
 		// Stop BT
 		AAIController* AIController = Cast<AAIController>(GetController());
 		if (AIController != nullptr) {

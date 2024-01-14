@@ -79,3 +79,17 @@ void ARLGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryI
 		DrawDebugSphere(GetWorld(), QueryLocations[0], 50.f, 20, FColor::Blue, false, 60.0f);
 	}
 }
+
+void ARLGameModeBase::KillAll()
+{
+	for (TActorIterator<ARLAICharacter> It(GetWorld()); It; ++It)
+	{
+		ARLAICharacter* Bot = *It;
+
+		// if (Bot->IsAlive())
+		URLAttributeComponent* AttributeComp = URLAttributeComponent::GetAttributes(Bot);
+		if (ensure(AttributeComp) && AttributeComp->IsAlive()) {
+			AttributeComp->Kill(this); // maybe pass player for kill credit
+		}
+	}
+}

@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RLAICharacter.generated.h"
 
+class URLWorldUserWidget;
 class URLAttributeComponent;
 class UPawnSensingComponent;
 
@@ -53,5 +54,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Effects")
 	float HideDamageHitEffectDelay;
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | UI")
+	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+
+	UPROPERTY()
+	URLWorldUserWidget* ActiveHealthBarWidget;
 };

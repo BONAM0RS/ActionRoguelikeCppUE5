@@ -28,6 +28,11 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+public:
+	// console command, 'Exec' spicifier can be used in player controller / character / game mode / cheat manager
+	UFUNCTION(Exec)
+	void HealSelf(float Amount = 100.f);
 	
 protected:
 	void MoveForward(float Value);

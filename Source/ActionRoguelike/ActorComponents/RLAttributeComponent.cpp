@@ -13,6 +13,11 @@ URLAttributeComponent::URLAttributeComponent()
 
 bool URLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
+	// just to not damage if god mode is enabled using cheats
+	if (!GetOwner()->CanBeDamaged()) {
+		return false;
+	}
+	
 	float OldCurrentHealth = CurrentHealth;
 	CurrentHealth = FMath::Clamp(CurrentHealth + Delta, 0.0f, MaxHealth);
 	float RealDelta = CurrentHealth - OldCurrentHealth;
@@ -20,6 +25,11 @@ bool URLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	OnHealthChanged.Broadcast(InstigatorActor, this, CurrentHealth, RealDelta);
 	
 	return RealDelta != 0.0f;
+}
+
+bool URLAttributeComponent::Kill(AActor* InstigatorActor)
+{
+	return ApplyHealthChange(InstigatorActor, -MaxHealth);
 }
 
 bool URLAttributeComponent::IsAlive() const

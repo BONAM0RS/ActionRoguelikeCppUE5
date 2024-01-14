@@ -21,6 +21,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attribute Component")
 	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
 
+	UFUNCTION(BlueprintCallable)
+	bool Kill(AActor* InstigatorActor);
+
 	UFUNCTION(BlueprintCallable, Category = "Attribute Component")
 	bool IsAlive() const;
 

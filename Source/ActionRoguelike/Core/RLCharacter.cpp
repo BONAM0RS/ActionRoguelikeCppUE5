@@ -83,6 +83,11 @@ void ARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ARLCharacter::PrimaryInteract);
 }
 
+void ARLCharacter::HealSelf(float Amount)
+{
+	AttributeComponent->ApplyHealthChange(this, Amount);
+}
+
 void ARLCharacter::MoveForward(float Value)
 {
 	FRotator ControlRotation = GetControlRotation();
