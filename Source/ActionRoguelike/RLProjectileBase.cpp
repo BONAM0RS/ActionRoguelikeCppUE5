@@ -2,10 +2,13 @@
 
 #include "RLProjectileBase.h"
 
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Sound/SoundCue.h"
+#include "LegacyCameraShake.h"
 
 
 ARLProjectileBase::ARLProjectileBase()
@@ -19,6 +22,9 @@ ARLProjectileBase::ARLProjectileBase()
 	ParticleSystemComponent = CreateDefaultSubobject<UParticleSystemComponent>("ParticleSystemComponent");
 	ParticleSystemComponent->SetupAttachment(SphereComponent);
 
+	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");
+	AudioComp->SetupAttachment(RootComponent);
+
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
 	ProjectileMovementComponent->InitialSpeed = 4000.0f;
 	ProjectileMovementComponent->ProjectileGravityScale = 0.f;
@@ -26,6 +32,9 @@ ARLProjectileBase::ARLProjectileBase()
 	ProjectileMovementComponent->bInitialVelocityInLocalSpace = true;
 
 	InitialLifeSpan = 15.f;
+
+	ImpactShakeInnerRadius = 0.0f;
+	ImpactShakeOuterRadius = 1500.0f;
 }
 
 void ARLProjectileBase::BeginPlay()
@@ -61,6 +70,14 @@ void ARLProjectileBase::Explode_Implementation()
 			UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
 		}
 
+		if (ImpactSound != nullptr) {
+			UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+		}
+
+		if (ImpactShake != nullptr) {
+			UGameplayStatics::PlayWorldCameraShake(this, ImpactShake, GetActorLocation(), ImpactShakeInnerRadius, ImpactShakeOuterRadius);
+		}
+		
 		//UE_LOG(LogTemp,Warning,TEXT("%S"), __FUNCTION__);
 		Destroy();
 	}

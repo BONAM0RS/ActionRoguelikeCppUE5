@@ -2,7 +2,8 @@
 
 #include "RLCharacter.h"
 
-#include "ActionRoguelike/RLProjectileBase.h"
+#include "ActionRoguelike/RLMageProjectile.h"
+//#include "ActionRoguelike/RLProjectileBase.h"
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "ActionRoguelike/ActorComponents/RLInteractionComponent.h"
 #include "Camera/CameraComponent.h"
@@ -38,6 +39,8 @@ ARLCharacter::ARLCharacter()
 
 	PrimaryHandSocketName = "Muzzle_01";
 	HitDamageParamName = "Damage";
+
+	DamageAmount = 50.f;
 }
 
 void ARLCharacter::BeginPlay()
@@ -151,11 +154,20 @@ void ARLCharacter::SpawnProjectile(TSubclassOf<AActor> ProjectileClassToSpawn)
 		FRotator RotatorToTargetPoint = FRotationMatrix::MakeFromX(ProjectileTargetPoint - PrimaryHandLocation).Rotator();
 		FTransform SpawnTransform = FTransform(RotatorToTargetPoint, PrimaryHandLocation);
 		
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
+		// FActorSpawnParameters SpawnParams;
+		// SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		// SpawnParams.Instigator = this;
+
+		// I need to set projectile damage like in AiCharacter here (READY)
+		//GetWorld()->SpawnActor<AActor>(ProjectileClassToSpawn, SpawnTransform, SpawnParams);
 		
-		GetWorld()->SpawnActor<AActor>(ProjectileClassToSpawn, SpawnTransform, SpawnParams);
+		AActor* NewProjectile = GetWorld()->SpawnActorDeferred<AActor>(ProjectileClassToSpawn,
+			SpawnTransform, this, this, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		ARLMageProjectile* MageProjectile = Cast<ARLMageProjectile>(NewProjectile);
+		if (MageProjectile != nullptr) {
+			MageProjectile->SetDamageAmount(DamageAmount);
+		}
+		UGameplayStatics::FinishSpawningActor(NewProjectile, SpawnTransform);
 	}
 }
 
@@ -192,6 +204,10 @@ void ARLCharacter::PrimaryInteract()
 
 void ARLCharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
+	if (InstigatorActor == this) {
+		return;
+	}
+	
 	if (Delta >= 0.0f) {
 		return;
 	}
@@ -200,7 +216,7 @@ void ARLCharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponen
 	if (Delta < 0.0f)
 	{
 		float ParameterValue = FMath::Abs(Delta) / AttributeComponent->GetMaxHealth();
-		UE_LOG(LogTemp,Warning,TEXT("%S: ParameterValue = %f"), __FUNCTION__, ParameterValue);
+		//UE_LOG(LogTemp,Warning,TEXT("%S: ParameterValue = %f"), __FUNCTION__, ParameterValue);
 		GetMesh()->SetScalarParameterValueOnMaterials(HitDamageParamName, ParameterValue);
 
 		FTimerHandle TimerHandle_HideHitDamageEffect;
@@ -218,7 +234,7 @@ void ARLCharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponen
 void ARLCharacter::HideHitDamageEffect()
 {
 	GetMesh()->SetScalarParameterValueOnMaterials(HitDamageParamName, 0.0f);
-	UE_LOG(LogTemp,Warning,TEXT("%S:"), __FUNCTION__);
+	//UE_LOG(LogTemp,Warning,TEXT("%S:"), __FUNCTION__);
 }
 
 

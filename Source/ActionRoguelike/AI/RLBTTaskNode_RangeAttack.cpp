@@ -3,16 +3,24 @@
 #include "RLBTTaskNode_RangeAttack.h"
 
 #include "AIController.h"
+#include "RLAICharacter.h"
+#include "ActionRoguelike/RLMageProjectile.h"
+#include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 
+
+URLBTTaskNode_RangeAttack::URLBTTaskNode_RangeAttack()
+{
+	MaxBulletSpread = 2.0f;
+}
 
 EBTNodeResult::Type URLBTTaskNode_RangeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
 	if (ensure(AIController))
 	{
-		ACharacter* AICharacter = Cast<ACharacter>(AIController->GetPawn());
+		ARLAICharacter* AICharacter = Cast<ARLAICharacter>(AIController->GetPawn());
 		if (AICharacter == nullptr) {
 			return EBTNodeResult::Failed;
 		}
@@ -21,15 +29,31 @@ EBTNodeResult::Type URLBTTaskNode_RangeAttack::ExecuteTask(UBehaviorTreeComponen
 		if (TargetActor == nullptr) {
 			return EBTNodeResult::Failed;
 		}
+
+		if (!URLAttributeComponent::IsActorAlive(TargetActor)) {
+			return EBTNodeResult::Failed;
+		}
 		
-		FVector MuzzleLocation = AICharacter->GetMesh()->GetSocketLocation("Muzzle_01");
+		FVector MuzzleLocation = AICharacter->GetMesh()->GetSocketLocation(AICharacter->GetMuzzleShotSocketName());
 		FVector Direction = TargetActor->GetActorLocation() - MuzzleLocation;
 		FRotator MuzzleRotation = Direction.Rotation();
 
-		FActorSpawnParameters ActorSpawnParams;
-		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		MuzzleRotation.Pitch += FMath::RandRange(0.0f, MaxBulletSpread);
+		MuzzleRotation.Yaw += FMath::RandRange(-MaxBulletSpread, MaxBulletSpread);
 
-		AActor* NewProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, MuzzleLocation, MuzzleRotation, ActorSpawnParams);
+		//FActorSpawnParameters ActorSpawnParams;
+		//ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		// I need to set projectile damage from AiCharacter here (READY)
+		//AActor* NewProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, MuzzleLocation, MuzzleRotation, ActorSpawnParams); // old way
+		FTransform SpawnTransform = FTransform(MuzzleRotation, MuzzleLocation);
+		AActor* NewProjectile = GetWorld()->SpawnActorDeferred<AActor>(ProjectileClass,
+			SpawnTransform, AICharacter, AICharacter, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		ARLMageProjectile* MageProjectile = Cast<ARLMageProjectile>(NewProjectile);
+		if (MageProjectile != nullptr) {
+			MageProjectile->SetDamageAmount(AICharacter->GetDamageAmount());
+		}
+		UGameplayStatics::FinishSpawningActor(NewProjectile, SpawnTransform);
 
 		return NewProjectile ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
 	}

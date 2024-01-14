@@ -12,6 +12,7 @@ class URLInteractionComponent;
 class UCameraComponent;
 class USpringArmComponent;
 
+// better have child classes from this base class: RLPlayerCharacter and RLAICharacter
 UCLASS()
 class ACTIONROGUELIKE_API ARLCharacter : public ACharacter
 {
@@ -71,6 +72,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Names")
 	FName HitDamageParamName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Damage")
+	float DamageAmount;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Projectile Classes")
 	TSubclassOf<ARLProjectileBase> PrimaryProjectileClass;

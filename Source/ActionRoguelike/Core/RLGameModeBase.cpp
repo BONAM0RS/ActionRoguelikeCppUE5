@@ -9,6 +9,8 @@
 
 
 ARLGameModeBase::ARLGameModeBase()
+	: DifficultyCurve(nullptr),
+	  SpawnBotQuery(nullptr)
 {
 	SpawnTimerInterval = 2.0f;
 }
@@ -22,6 +24,35 @@ void ARLGameModeBase::StartPlay()
 
 void ARLGameModeBase::SpawnBotTimerElapsed()
 {
+	// I guess this entire check need own function
+	
+	int32 NumOfAliveBots = 0;
+	//similar to GetAllActorsOfClass node in C++
+	for (TActorIterator<ARLAICharacter> It(GetWorld()); It; ++It)
+	{
+		ARLAICharacter* Bot = *It;
+
+		// if (Bot->IsAlive())
+		URLAttributeComponent* AttributeComp = URLAttributeComponent::GetAttributes(Bot);
+		if (ensure(AttributeComp) && AttributeComp->IsAlive()) {
+			NumOfAliveBots++;
+		}
+	}
+
+	UE_LOG(LogTemp,Warning, TEXT("Found %i alive bots"), NumOfAliveBots);
+	
+	float MaxNumOfAliveBots = 10.f;
+	if (DifficultyCurve != nullptr) {
+		MaxNumOfAliveBots = DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds);
+	}
+	
+	if (NumOfAliveBots >= MaxNumOfAliveBots)
+	{
+		UE_LOG(LogTemp,Warning, TEXT("At max bot capacity. Skipping bot spawn"));
+		return;
+	}
+	// end check
+	
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(
 		this, SpawnBotQuery,this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 
@@ -38,32 +69,13 @@ void ARLGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryI
 		UE_LOG(LogTemp,Warning,TEXT("Spawn bot EQS Failed"));
 		return;
 	}
-
-	int32 NumOfAliveBots = 0;
-	for (TActorIterator<ARLAICharacter> It(GetWorld()); It; ++It)
-	{
-		ARLAICharacter* Bot = *It;
-
-		// if (Bot->IsAlive())
-		URLAttributeComponent* AttributeComp = Cast<URLAttributeComponent>(Bot->GetComponentByClass(URLAttributeComponent::StaticClass()));
-		if (AttributeComp != nullptr && AttributeComp->IsAlive()) {
-			NumOfAliveBots++;
-		}
-	}
-
-	float MaxNumOfAliveBots = 10.f;
-
-	if (DifficultyCurve != nullptr) {
-		MaxNumOfAliveBots = DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds);
-	}
-	
-	if (NumOfAliveBots >= MaxNumOfAliveBots) {
-		return;
-	}
 	
 	TArray<FVector> QueryLocations = QueryInstance->GetResultsAsLocations();
 	if (QueryLocations.Num() > 0)
 	{
 		GetWorld()->SpawnActor<AActor>(MinionClass, QueryLocations[0], FRotator::ZeroRotator);
+
+		// track all the used spawn location
+		DrawDebugSphere(GetWorld(), QueryLocations[0], 50.f, 20, FColor::Blue, false, 60.0f);
 	}
 }

@@ -12,6 +12,8 @@ ARLMageProjectile::ARLMageProjectile()
 {
 	ProjectileMovementComponent->InitialSpeed = 5000.0f;
 	InitialLifeSpan = 10.f;
+
+	DamageAmount = 20.0f;
 }
 
 void ARLMageProjectile::PostInitializeComponents()
@@ -30,10 +32,16 @@ void ARLMageProjectile::OnSphereComponentBeginOverlap(UPrimitiveComponent* Overl
 		if (FoundActorComponent)
 		{
 			URLAttributeComponent* AttributeComponent = Cast<URLAttributeComponent>(FoundActorComponent);
-			AttributeComponent->ApplyHealthChange(-20.f);
+			AttributeComponent->ApplyHealthChange(GetInstigator(), -DamageAmount);
 
 			//UE_LOG(LogTemp,Warning,TEXT("%S"), __FUNCTION__);
 			Explode();
 		}
 	}
 }
+
+void ARLMageProjectile::SetDamageAmount(float NewDamageAmount)
+{
+	DamageAmount = NewDamageAmount;
+}
+

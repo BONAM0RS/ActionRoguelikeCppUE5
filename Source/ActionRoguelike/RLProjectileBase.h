@@ -8,6 +8,7 @@
 
 class UProjectileMovementComponent;
 class USphereComponent;
+class ULegacyCameraShake;
 
 UCLASS(ABSTRACT)
 class ACTIONROGUELIKE_API ARLProjectileBase : public AActor
@@ -42,9 +43,23 @@ protected:
 	UParticleSystemComponent* ParticleSystemComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UAudioComponent* AudioComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,  Category = "Config | Effects")
 	UParticleSystem* ImpactVFX;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config | Effects")
+	USoundCue* ImpactSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config | Shake")
+	TSubclassOf<ULegacyCameraShake> ImpactShake;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Shake")
+	float ImpactShakeInnerRadius;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Shake")
+	float ImpactShakeOuterRadius;
 };

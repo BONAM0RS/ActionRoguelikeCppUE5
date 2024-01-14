@@ -15,12 +15,7 @@ class ACTIONROGUELIKE_API ARLItemChest : public AActor, public IRLGameplayInterf
 public:	
 	ARLItemChest();
 
-protected:
-	virtual void BeginPlay() override;
-
 public:	
-	virtual void Tick(float DeltaTime) override;
-
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
 protected:

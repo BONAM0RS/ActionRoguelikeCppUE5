@@ -19,7 +19,7 @@ public:
 	URLAttributeComponent();
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute Component")
-	bool ApplyHealthChange(float Delta);
+	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute Component")
 	bool IsAlive() const;
@@ -29,6 +29,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute Component")
 	float GetMaxHealth() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	static URLAttributeComponent* GetAttributes(AActor* FromActor);
+
+	// DisplayName is optional, just example here
+	UFUNCTION(BlueprintCallable, Category = "Attributes", meta = (DisplayName = "IsAlive"))
+	static bool IsActorAlive(AActor* Actor);
 	
 public:
 	UPROPERTY(BlueprintAssignable)

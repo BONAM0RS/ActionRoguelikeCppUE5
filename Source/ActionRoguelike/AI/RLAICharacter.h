@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RLAICharacter.generated.h"
 
+class URLAttributeComponent;
 class UPawnSensingComponent;
 
 UCLASS()
@@ -22,8 +23,35 @@ protected:
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
 
+	void SetTargetActor(AActor* NewTarget);
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	void HideHitDamageEffect();
+	
+public:
+	float GetDamageAmount();
+	
+	FName GetMuzzleShotSocketName();
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	UPawnSensingComponent* PawnSensingComp;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	URLAttributeComponent* AttributeComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Names")
+	FName MuzzleShotSocketName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Names")
+	FName HitDamageParamName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Damage")
+	float DamageAmount;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Effects")
+	float HideDamageHitEffectDelay;
+	
 };
