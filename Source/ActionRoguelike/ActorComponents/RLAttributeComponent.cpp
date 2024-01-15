@@ -47,6 +47,11 @@ float URLAttributeComponent::GetMaxHealth() const
 	return MaxHealth;
 }
 
+float URLAttributeComponent::GetCurrentHealth() const
+{
+	return CurrentHealth;
+}
+
 bool URLAttributeComponent::IsActorAlive(AActor* Actor)
 {
 	URLAttributeComponent* AttributeComp = GetAttributes(Actor);

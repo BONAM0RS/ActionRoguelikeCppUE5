@@ -32,6 +32,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attribute Component")
 	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attribute Component")
+	float GetCurrentHealth() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	static URLAttributeComponent* GetAttributes(AActor* FromActor);

@@ -6,6 +6,11 @@
 #include "BehaviorTree/BlackboardComponent.h"
 
 
+URLBTService_CheckAttackRange::URLBTService_CheckAttackRange()
+{
+	WithingRange = 2000.f;
+}
+
 void URLBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
@@ -24,7 +29,7 @@ void URLBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, 
 				if (ensure(AIPawn))
 				{
 					float DistanceToTarget = FVector::Distance(TargetActor->GetActorLocation(), AIPawn->GetActorLocation());
-					bool bWithingRange = DistanceToTarget < 2000.f;
+					bool bWithingRange = DistanceToTarget < WithingRange;
 
 					bool bHasLOS = false; 
 					if (bWithingRange) {
