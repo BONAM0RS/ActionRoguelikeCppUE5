@@ -2,6 +2,12 @@
 
 #include "RLAttributeComponent.h"
 
+#include "ActionRoguelike/Core/RLGameModeBase.h"
+
+
+static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("su.DamageMultiplier"), 1.0f,
+	TEXT("Global Damage Modifier for Attribute Component"), ECVF_Cheat);
+
 
 URLAttributeComponent::URLAttributeComponent()
 {
@@ -13,9 +19,15 @@ URLAttributeComponent::URLAttributeComponent()
 
 bool URLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
-	// just to not damage if god mode is enabled using cheats
-	if (!GetOwner()->CanBeDamaged()) {
-		return false;
+	if (Delta < 0.0f)
+	{
+		// just to not damage if god mode is enabled using cheats
+		if (!GetOwner()->CanBeDamaged()) {
+			return false;
+		}
+		
+		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
+		Delta *= DamageMultiplier;
 	}
 	
 	float OldCurrentHealth = CurrentHealth;
@@ -23,6 +35,15 @@ bool URLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	float RealDelta = CurrentHealth - OldCurrentHealth;
 
 	OnHealthChanged.Broadcast(InstigatorActor, this, CurrentHealth, RealDelta);
+
+	// Died
+	if (RealDelta < 0.0f && CurrentHealth == 0.0f)
+	{
+		ARLGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ARLGameModeBase>();
+		if (GameMode != nullptr) {
+			GameMode->OnActorKilled(GetOwner(), InstigatorActor);
+		}
+	}
 	
 	return RealDelta != 0.0f;
 }

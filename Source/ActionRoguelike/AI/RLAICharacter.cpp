@@ -8,6 +8,8 @@
 #include "ActionRoguelike/UI/RLWorldUserWidget.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 
 
@@ -17,6 +19,10 @@ ARLAICharacter::ARLAICharacter()
 	AttributeComponent = CreateDefaultSubobject<URLAttributeComponent>("AttributeComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	GetMesh()->SetGenerateOverlapEvents(true);
+	// Temp solution
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
 
 	MuzzleShotSocketName = "Muzzle_Front";
 	HitDamageParamName = "Damage";
@@ -101,6 +107,10 @@ void ARLAICharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeCompon
 		// Ragdoll
 		GetMesh()->SetAllBodiesSimulatePhysics(true);
 		GetMesh()->SetCollisionProfileName("Ragdoll");
+
+		// Disable capsule collision and movement
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCharacterMovement()->DisableMovement();
 
 		// Set lifespan to destroy
 		SetLifeSpan(10.f);

@@ -6,6 +6,7 @@
 #include "ActorComponents/RLAttributeComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Utility/RLGameplayFunctionLibrary.h"
 
 
 ARLMageProjectile::ARLMageProjectile()
@@ -28,13 +29,18 @@ void ARLMageProjectile::OnSphereComponentBeginOverlap(UPrimitiveComponent* Overl
 	// don't forget to add check of instigator on hit event
 	if (OtherActor != nullptr && OtherActor != GetInstigator())
 	{
-		UActorComponent* FoundActorComponent = OtherActor->GetComponentByClass(URLAttributeComponent::StaticClass());
-		if (FoundActorComponent)
-		{
-			URLAttributeComponent* AttributeComponent = Cast<URLAttributeComponent>(FoundActorComponent);
-			AttributeComponent->ApplyHealthChange(GetInstigator(), -DamageAmount);
+		// UActorComponent* FoundActorComponent = OtherActor->GetComponentByClass(URLAttributeComponent::StaticClass());
+		// if (FoundActorComponent)
+		// {
+		// 	URLAttributeComponent* AttributeComponent = Cast<URLAttributeComponent>(FoundActorComponent);
+		// 	AttributeComponent->ApplyHealthChange(GetInstigator(), -DamageAmount);
+		//
+		// 	//UE_LOG(LogTemp,Warning,TEXT("%S"), __FUNCTION__);
+		// 	Explode();
+		// }
 
-			//UE_LOG(LogTemp,Warning,TEXT("%S"), __FUNCTION__);
+		if (URLGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
+		{
 			Explode();
 		}
 	}

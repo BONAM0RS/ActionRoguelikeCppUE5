@@ -33,6 +33,8 @@ public:
 	// console command, 'Exec' spicifier can be used in player controller / character / game mode / cheat manager
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.f);
+
+	virtual FVector GetPawnViewLocation() const override;
 	
 protected:
 	void MoveForward(float Value);

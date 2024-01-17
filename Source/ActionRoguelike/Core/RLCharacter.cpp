@@ -88,6 +88,15 @@ void ARLCharacter::HealSelf(float Amount)
 	AttributeComponent->ApplyHealthChange(this, Amount);
 }
 
+FVector ARLCharacter::GetPawnViewLocation() const
+{
+	//It's ok for first person, but not third person with aim crosshair in center of screen
+	//return Super::GetPawnViewLocation();
+
+	// used in GetActorEyesViewPoint
+	return CameraComponent->GetComponentLocation();
+}
+
 void ARLCharacter::MoveForward(float Value)
 {
 	FRotator ControlRotation = GetControlRotation();
@@ -233,6 +242,8 @@ void ARLCharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponen
 	{
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		DisableInput(PlayerController);
+
+		// don't forget to disable capsule
 	}
 }
 
@@ -241,6 +252,7 @@ void ARLCharacter::HideHitDamageEffect()
 	GetMesh()->SetScalarParameterValueOnMaterials(HitDamageParamName, 0.0f);
 	//UE_LOG(LogTemp,Warning,TEXT("%S:"), __FUNCTION__);
 }
+
 
 
 

@@ -32,6 +32,12 @@ public:
 	UFUNCTION(Exec)
 	void KillAll();
 
+	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
+
+protected:
+	UFUNCTION()
+	void RespawnPlayerElapsed(AController* Controller);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UCurveFloat* DifficultyCurve;

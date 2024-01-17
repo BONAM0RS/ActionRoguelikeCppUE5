@@ -3,9 +3,14 @@
 #include "RLGameModeBase.h"
 
 #include "EngineUtils.h"
+#include "RLCharacter.h"
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "ActionRoguelike/AI/RLAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+
+
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true,
+	TEXT("Enable spawning of bots via timer"), ECVF_Cheat);
 
 
 ARLGameModeBase::ARLGameModeBase()
@@ -24,6 +29,12 @@ void ARLGameModeBase::StartPlay()
 
 void ARLGameModeBase::SpawnBotTimerElapsed()
 {
+	if (!CVarSpawnBots.GetValueOnGameThread())
+	{
+		UE_LOG(LogTemp,Warning,TEXT("Bot spawning disabled via 'CVarSpawnBots'"));
+		return;
+	}
+	
 	// I guess this entire check need own function
 	
 	int32 NumOfAliveBots = 0;
@@ -91,5 +102,31 @@ void ARLGameModeBase::KillAll()
 		if (ensure(AttributeComp) && AttributeComp->IsAlive()) {
 			AttributeComp->Kill(this); // maybe pass player for kill credit
 		}
+	}
+}
+
+void ARLGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
+{
+	ARLCharacter* Player = Cast<ARLCharacter>(VictimActor);
+	if (Player != nullptr)
+	{
+		FTimerHandle TimerHandle_RespawnDelay;
+
+		FTimerDelegate Delegate;
+		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
+
+		float RespawnDelay = 2.0f;
+		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
+	}
+
+	UE_LOG(LogTemp,Warning, TEXT("OnActorKilled: Victim = %s, Killer = %s"), *GetNameSafe(VictimActor), *GetNameSafe(Killer));
+}
+
+void ARLGameModeBase::RespawnPlayerElapsed(AController* Controller)
+{
+	if (ensure(Controller))
+	{
+		Controller->UnPossess();
+		RestartPlayer(Controller);
 	}
 }
