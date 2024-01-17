@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RLCharacter.generated.h"
 
+class URLActionComponent;
 class URLAttributeComponent;
 class ARLProjectileBase;
 class URLInteractionComponent;
@@ -28,6 +29,24 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+protected:
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+
+	void SprintStart();
+	void SprintStop();
+
+	void PrimaryAttack();
+	void DashAttack();
+	void BlackHoleAttack();
+	
+	void PrimaryInteract();
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	void HideHitDamageEffect();
 
 public:
 	// console command, 'Exec' spicifier can be used in player controller / character / game mode / cheat manager
@@ -35,31 +54,8 @@ public:
 	void HealSelf(float Amount = 100.f);
 
 	virtual FVector GetPawnViewLocation() const override;
-	
-protected:
-	void MoveForward(float Value);
-	void MoveRight(float Value);
 
-	void PrimaryAttack();
-	void PrimaryAttack_TimeElapsed();
-
-	void DashAttack();
-	void DashAttack_TimeElapsed();
-
-	void BlackHoleAttack();
-	void BlackHoleAttack_TimeElapsed();
-
-	void StartAttackEffect();
-
-	void SpawnProjectile(TSubclassOf<AActor> ProjectileClassToSpawn);
-	FVector CalculateProjectileTargetPoint();
-
-	void PrimaryInteract();
-
-	UFUNCTION()
-	void OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta);
-
-	void HideHitDamageEffect();
+	float GetDamageAmount();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -74,42 +70,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	URLAttributeComponent* AttributeComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Names")
-	FName PrimaryHandSocketName;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	URLActionComponent* ActionComp;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Names")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
 	FName HitDamageParamName;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Damage")
-	float DamageAmount;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Projectile Classes")
-	TSubclassOf<ARLProjectileBase> PrimaryProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Projectile Classes")
-	TSubclassOf<ARLProjectileBase> DashProjectileClass;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Projectile Classes")
-	TSubclassOf<ARLProjectileBase> BlackHoleProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Effects")
-	UParticleSystem* CastingEffect;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Animation Montages")
-	UAnimMontage* AttackAnim;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Animation Montages")
-	float AttackAnimDelay;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Effects")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
 	float HideDamageHitEffectDelay;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Projectile Target Point Trace")
-	float TraceLength;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Projectile Target Point Trace")
-	float TraceSphereRadius;
-	
-	FTimerHandle TimerHandle_PrimaryAttack;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	float DamageAmount;
 	
 };

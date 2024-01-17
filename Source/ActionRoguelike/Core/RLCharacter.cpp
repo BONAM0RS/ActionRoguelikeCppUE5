@@ -2,14 +2,12 @@
 
 #include "RLCharacter.h"
 
-#include "ActionRoguelike/RLMageProjectile.h"
-//#include "ActionRoguelike/RLProjectileBase.h"
+#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "ActionRoguelike/ActorComponents/RLInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 
 ARLCharacter::ARLCharacter()
@@ -25,21 +23,15 @@ ARLCharacter::ARLCharacter()
 
 	InteractionComponent = CreateDefaultSubobject<URLInteractionComponent>("InteractionComponent");
 	AttributeComponent = CreateDefaultSubobject<URLAttributeComponent>("AttributeComponent");
+	ActionComp = CreateDefaultSubobject<URLActionComponent>("ActionComp");
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 	bUseControllerRotationYaw = false;
 
-	AttackAnimDelay = 0.2f;
-	
+	HitDamageParamName = "Damage";
 	HideDamageHitEffectDelay = 0.2f;
 	
-	TraceLength = 5000.f;
-	TraceSphereRadius = 20.f;
-
-	PrimaryHandSocketName = "Muzzle_01";
-	HitDamageParamName = "Damage";
-
 	DamageAmount = 50.f;
 }
 
@@ -65,36 +57,33 @@ void ARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	//Movement
+	// MOVEMENT
 	PlayerInputComponent->BindAxis("MoveForward", this, &ARLCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARLCharacter::MoveRight);
 
-	//Rotation control
+	// ROTATION CONTROL
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
-	//Actions
+	// ACTIONS
+	// Movement
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ARLCharacter::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ARLCharacter::SprintStop);
+
+	// Attack
+	// Maybe later add Secondary Attack (some big shot with splash maybe), rename BlackHole to "Ultimate Attack", Dash to smth 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ARLCharacter::PrimaryAttack);
+
+	// rework into teleport ability to place where is projectile maybe
 	PlayerInputComponent->BindAction("DashAttack", IE_Pressed, this, &ARLCharacter::DashAttack);
+
+	// rework to black hole where projectile hit maybe
 	PlayerInputComponent->BindAction("BlackHoleAttack", IE_Pressed, this, &ARLCharacter::BlackHoleAttack);
 
+	//Interact
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ARLCharacter::PrimaryInteract);
-}
-
-void ARLCharacter::HealSelf(float Amount)
-{
-	AttributeComponent->ApplyHealthChange(this, Amount);
-}
-
-FVector ARLCharacter::GetPawnViewLocation() const
-{
-	//It's ok for first person, but not third person with aim crosshair in center of screen
-	//return Super::GetPawnViewLocation();
-
-	// used in GetActorEyesViewPoint
-	return CameraComponent->GetComponentLocation();
 }
 
 void ARLCharacter::MoveForward(float Value)
@@ -117,98 +106,29 @@ void ARLCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
-void ARLCharacter::PrimaryAttack()
+void ARLCharacter::SprintStart()
 {
-	StartAttackEffect();
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ARLCharacter::PrimaryAttack_TimeElapsed, AttackAnimDelay);
+	ActionComp->StartActionByName(this, "Sprint");
 }
 
-void ARLCharacter::PrimaryAttack_TimeElapsed()
+void ARLCharacter::SprintStop()
 {
-	SpawnProjectile(PrimaryProjectileClass);
+	ActionComp->StopActionByName(this, "Sprint");
+}
+
+void ARLCharacter::PrimaryAttack()
+{
+	ActionComp->StartActionByName(this, "PrimaryAttack");
 }
 
 void ARLCharacter::DashAttack()
 {
-	StartAttackEffect();
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ARLCharacter::DashAttack_TimeElapsed, AttackAnimDelay);
-}
-
-void ARLCharacter::DashAttack_TimeElapsed()
-{
-	SpawnProjectile(DashProjectileClass);
+	ActionComp->StartActionByName(this, "DashAttack");
 }
 
 void ARLCharacter::BlackHoleAttack()
 {
-	StartAttackEffect();
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ARLCharacter::BlackHoleAttack_TimeElapsed, AttackAnimDelay);
-}
-
-void ARLCharacter::BlackHoleAttack_TimeElapsed()
-{
-	SpawnProjectile(BlackHoleProjectileClass);
-}
-
-void ARLCharacter::StartAttackEffect()
-{
-	PlayAnimMontage(AttackAnim);
-
-	UGameplayStatics::SpawnEmitterAttached(CastingEffect, GetMesh(), PrimaryHandSocketName,
-		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
-}
-
-void ARLCharacter::SpawnProjectile(TSubclassOf<AActor> ProjectileClassToSpawn)
-{
-	if (ensureAlways(ProjectileClassToSpawn))
-	{
-		FVector ProjectileTargetPoint = CalculateProjectileTargetPoint();
-		
-		FVector PrimaryHandLocation = GetMesh()->GetSocketLocation(PrimaryHandSocketName);
-		FRotator RotatorToTargetPoint = FRotationMatrix::MakeFromX(ProjectileTargetPoint - PrimaryHandLocation).Rotator();
-		FTransform SpawnTransform = FTransform(RotatorToTargetPoint, PrimaryHandLocation);
-		
-		// FActorSpawnParameters SpawnParams;
-		// SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		// SpawnParams.Instigator = this;
-
-		// I need to set projectile damage like in AiCharacter here (READY)
-		//GetWorld()->SpawnActor<AActor>(ProjectileClassToSpawn, SpawnTransform, SpawnParams);
-		
-		AActor* NewProjectile = GetWorld()->SpawnActorDeferred<AActor>(ProjectileClassToSpawn,
-			SpawnTransform, this, this, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-		ARLMageProjectile* MageProjectile = Cast<ARLMageProjectile>(NewProjectile);
-		if (MageProjectile != nullptr) {
-			MageProjectile->SetDamageAmount(DamageAmount);
-		}
-		UGameplayStatics::FinishSpawningActor(NewProjectile, SpawnTransform);
-	}
-}
-
-FVector ARLCharacter::CalculateProjectileTargetPoint()
-{
-	FVector TraceStart = CameraComponent->GetComponentLocation();
-	FVector TraceEnd = TraceStart + (GetControlRotation().Vector() * TraceLength);
-
-	FCollisionObjectQueryParams CollisionObjectQueryParams;
-	CollisionObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	CollisionObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-	CollisionObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
-
-	FCollisionShape CollisionShape;
-	CollisionShape.SetSphere(TraceSphereRadius);
-
-	FCollisionQueryParams CollisionQueryParams;
-	CollisionQueryParams.AddIgnoredActor(this);
-		
-	FHitResult HitResult;
-	bool bHitSuccess = GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity,
-												CollisionObjectQueryParams, CollisionShape, CollisionQueryParams);
-	if (bHitSuccess) {
-		return HitResult.ImpactPoint;
-	}
-	
-	return TraceEnd;
+	ActionComp->StartActionByName(this, "BlackHoleAttack");
 }
 
 void ARLCharacter::PrimaryInteract()
@@ -251,6 +171,25 @@ void ARLCharacter::HideHitDamageEffect()
 {
 	GetMesh()->SetScalarParameterValueOnMaterials(HitDamageParamName, 0.0f);
 	//UE_LOG(LogTemp,Warning,TEXT("%S:"), __FUNCTION__);
+}
+
+void ARLCharacter::HealSelf(float Amount)
+{
+	AttributeComponent->ApplyHealthChange(this, Amount);
+}
+
+FVector ARLCharacter::GetPawnViewLocation() const
+{
+	//It's ok for first person, but not third person with aim crosshair in center of screen
+	//return Super::GetPawnViewLocation();
+
+	// used in GetActorEyesViewPoint
+	return CameraComponent->GetComponentLocation();
+}
+
+float ARLCharacter::GetDamageAmount()
+{
+	return DamageAmount;
 }
 
 

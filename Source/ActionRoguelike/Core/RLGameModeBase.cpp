@@ -50,7 +50,7 @@ void ARLGameModeBase::SpawnBotTimerElapsed()
 		}
 	}
 
-	UE_LOG(LogTemp,Warning, TEXT("Found %i alive bots"), NumOfAliveBots);
+	//UE_LOG(LogTemp,Warning, TEXT("Found %i alive bots"), NumOfAliveBots);
 	
 	float MaxNumOfAliveBots = 10.f;
 	if (DifficultyCurve != nullptr) {
@@ -59,7 +59,7 @@ void ARLGameModeBase::SpawnBotTimerElapsed()
 	
 	if (NumOfAliveBots >= MaxNumOfAliveBots)
 	{
-		UE_LOG(LogTemp,Warning, TEXT("At max bot capacity. Skipping bot spawn"));
+		//UE_LOG(LogTemp,Warning, TEXT("At max bot capacity. Skipping bot spawn"));
 		return;
 	}
 	// end check
@@ -119,7 +119,7 @@ void ARLGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
 	}
 
-	UE_LOG(LogTemp,Warning, TEXT("OnActorKilled: Victim = %s, Killer = %s"), *GetNameSafe(VictimActor), *GetNameSafe(Killer));
+	//UE_LOG(LogTemp,Warning, TEXT("OnActorKilled: Victim = %s, Killer = %s"), *GetNameSafe(VictimActor), *GetNameSafe(Killer));
 }
 
 void ARLGameModeBase::RespawnPlayerElapsed(AController* Controller)
