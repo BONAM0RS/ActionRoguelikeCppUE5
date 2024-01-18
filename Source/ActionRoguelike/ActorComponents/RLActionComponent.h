@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "RLActionComponent.generated.h"
 
@@ -32,11 +33,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
 
+public:
+	// You need add header include because it is not a pointer (that's why forward declaration is not enough),
+	// so compiler needs to know size of struct
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
+	FGameplayTagContainer ActiveGameplayTags;
+	
 protected:
 	UPROPERTY()
 	TArray<URLAction*> Actions;
 	
 	UPROPERTY(EditAnywhere, Category = "Actions")
 	TArray<TSubclassOf<URLAction>> DefaultActions;
-		
+	
 };

@@ -57,6 +57,9 @@ void ARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// Check review video on 'Life EXE' channel
+	// https://youtu.be/dUmXk-p43oo?si=zljlT5zBWL-nnKJy
+
 	// MOVEMENT
 	PlayerInputComponent->BindAxis("MoveForward", this, &ARLCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARLCharacter::MoveRight);

@@ -8,14 +8,9 @@ public class ActionRoguelike : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		// "AIModule" auto added in ActionRoguelike.uproject file and looks like you don't need to add "GameplayTasks" for BTService
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
-
-		// enable camera module
-		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayCameras" });
-
-		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+		// Some modules can be auto added in uproject file, but better to keep add it here
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", 
+			"GameplayCameras", "AIModule", "GameplayTasks", "UMG", "GameplayTags" });
 		
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
