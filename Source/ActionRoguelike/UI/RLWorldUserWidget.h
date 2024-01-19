@@ -31,6 +31,6 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	USizeBox* ParentSizeBox;
 
-	UPROPERTY(EditAnywhere, Category = "Config | UI")
+	UPROPERTY(EditAnywhere, Category = "Config")
 	FVector WorldOffset;
 };

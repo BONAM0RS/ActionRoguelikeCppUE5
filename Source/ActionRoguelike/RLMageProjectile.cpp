@@ -3,7 +3,8 @@
 
 #include "RLMageProjectile.h"
 
-#include "ActorComponents/RLAttributeComponent.h"
+#include "ActorComponents/RLActionComponent.h"
+//#include "ActorComponents/RLAttributeComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Utility/RLGameplayFunctionLibrary.h"
@@ -38,6 +39,14 @@ void ARLMageProjectile::OnSphereComponentBeginOverlap(UPrimitiveComponent* Overl
 		// 	//UE_LOG(LogTemp,Warning,TEXT("%S"), __FUNCTION__);
 		// 	Explode();
 		// }
+
+		URLActionComponent* ActionComp = Cast<URLActionComponent>(OtherActor->GetComponentByClass(URLActionComponent::StaticClass()));
+		if (ActionComp != nullptr && ActionComp->ActiveGameplayTags.HasTag(ParryTag))
+		{
+			ProjectileMovementComponent->Velocity = -ProjectileMovementComponent->Velocity;
+			SetInstigator(Cast<APawn>(OtherActor));
+			return;
+		}
 
 		if (URLGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
 		{

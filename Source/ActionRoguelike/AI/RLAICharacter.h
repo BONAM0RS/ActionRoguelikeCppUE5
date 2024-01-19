@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RLAICharacter.generated.h"
 
+class URLActionComponent;
 class URLWorldUserWidget;
 class URLAttributeComponent;
 class UPawnSensingComponent;
@@ -42,6 +43,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	URLAttributeComponent* AttributeComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	URLActionComponent* ActionComp;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Names")
 	FName MuzzleShotSocketName;

@@ -6,9 +6,9 @@
 #include "GameplayTagContainer.h"
 #include "RLAction.generated.h"
 
-
 class URLActionComponent;
 
+// should be abstract
 UCLASS(Blueprintable)
 class ACTIONROGUELIKE_API URLAction : public UObject
 {
@@ -20,7 +20,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
 	void StartAction(AActor* Instigator);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Action")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Action")
 	void StopAction(AActor* Instigator);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
@@ -36,6 +36,7 @@ protected:
 	URLActionComponent* GetOwningComponent() const;
 	
 public:
+	// replace this with Tag to not write FName each time
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FName ActionName;
 

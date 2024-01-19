@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "RLProjectileBase.h"
 #include "RLMageProjectile.generated.h"
 
@@ -27,6 +28,9 @@ public:
 
 protected:
 	//ExposeOnSpawn allow to set property in spawn actor from class node
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ExposeOnSpawn="true"), Category = "Config | Damage")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ExposeOnSpawn="true"), Category = "Config")
 	float DamageAmount;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config")
+	FGameplayTag ParryTag;
 };

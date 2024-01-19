@@ -4,6 +4,7 @@
 
 #include "AIController.h"
 #include "BrainComponent.h"
+#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "ActionRoguelike/UI/RLWorldUserWidget.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -17,6 +18,7 @@ ARLAICharacter::ARLAICharacter()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
 	AttributeComponent = CreateDefaultSubobject<URLAttributeComponent>("AttributeComp");
+	ActionComp = CreateDefaultSubobject<URLActionComponent>("ActionComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 

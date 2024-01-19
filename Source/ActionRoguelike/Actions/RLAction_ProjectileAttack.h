@@ -8,7 +8,7 @@
 
 class ARLProjectileBase;
 
-
+// should be abstract
 UCLASS()
 class ACTIONROGUELIKE_API URLAction_ProjectileAttack : public URLAction
 {
