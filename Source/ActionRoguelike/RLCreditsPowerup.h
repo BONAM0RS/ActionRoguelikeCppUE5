@@ -4,20 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "RLPowerupBase.h"
-#include "RLHealPowerup.generated.h"
+#include "RLCreditsPowerup.generated.h"
 
 
-UCLASS(Abstract)
-class ACTIONROGUELIKE_API ARLHealPowerup : public ARLPowerupBase
+UCLASS()
+class ACTIONROGUELIKE_API ARLCreditsPowerup : public ARLPowerupBase
 {
 	GENERATED_BODY()
 
 public:
-	ARLHealPowerup();
+	ARLCreditsPowerup();
 	
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Config")
-	int32 CreditsCost;
+	int32 CreditsAmount;
+	
 };

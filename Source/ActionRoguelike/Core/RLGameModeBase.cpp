@@ -4,6 +4,7 @@
 
 #include "EngineUtils.h"
 #include "RLCharacter.h"
+#include "RLPlayerState.h"
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "ActionRoguelike/AI/RLAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
@@ -14,18 +15,165 @@ static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true,
 
 
 ARLGameModeBase::ARLGameModeBase()
-	: DifficultyCurve(nullptr),
-	  SpawnBotQuery(nullptr)
+	: PowerupSpawnQuery(nullptr),
+	  DifficultyCurve(nullptr),
+      SpawnBotQuery(nullptr)
 {
+	PlayerStateClass = ARLPlayerState::StaticClass();
+
+	DesiredPowerupCount = 10;
+	RequiredPowerupDistance = 2000;
+
 	SpawnTimerInterval = 2.0f;
+
+	CreditsPerKill = 20;
 }
 
 void ARLGameModeBase::StartPlay()
 {
 	Super::StartPlay();
+	
+	// Make sure we have assigned at least one power-up class
+	if (ensure(PowerupClasses.Num() > 0))
+	{
+		// // Run EQS to find potential power-up spawn locations
+		// UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this,
+		// 	PowerupSpawnQuery, this, EEnvQueryRunMode::AllMatching, nullptr);
+		// if (ensure(QueryInstance))
+		// {
+		// 	QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ARLGameModeBase::OnPowerupSpawnQueryCompleted);
+		// }
 
+		FEnvQueryRequest Request(PowerupSpawnQuery, this);
+		Request.Execute(EEnvQueryRunMode::AllMatching, this, &ARLGameModeBase::OnPowerupSpawnQueryCompleted);
+	}
+
+	// start bot spawning
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ARLGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
 }
+
+void ARLGameModeBase::OnPowerupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result)
+{
+	FEnvQueryResult* QueryResult = Result.Get();
+	if (!QueryResult->IsSuccessful())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Powerup EQS Query Failed!"));
+		return;
+	}
+
+	// Retrieve all possible locations that passed the query
+	TArray<FVector> Locations;
+	QueryResult->GetAllAsLocations(Locations);
+
+	// Keep used locations to easily check distance between points
+	TArray<FVector> UsedLocations;
+
+	int32 SpawnCounter = 0;
+	// Break out if we reached the desired count or if we have no more potential positions remaining
+	while (SpawnCounter < DesiredPowerupCount && Locations.Num() > 0)
+	{
+		// Pick a random location from remaining points.
+		int32 RandomLocationIndex = FMath::RandRange(0, Locations.Num() - 1);
+
+		FVector PickedLocation = Locations[RandomLocationIndex];
+		// Remove to avoid picking again
+		Locations.RemoveAt(RandomLocationIndex);
+
+		// Check minimum distance requirement
+		bool bValidLocation = true;
+		for (FVector OtherLocation : UsedLocations)
+		{
+			float DistanceTo = (PickedLocation - OtherLocation).Size();
+
+			if (DistanceTo < RequiredPowerupDistance)
+			{
+				// Show skipped locations due to distance
+				//DrawDebugSphere(GetWorld(), PickedLocation, 50.0f, 20, FColor::Red, false, 10.0f);
+
+				// too close, skip to next attempt
+				bValidLocation = false;
+				break;
+			}
+		}
+
+		// Failed the distance test
+		if (!bValidLocation)
+		{
+			continue;
+		}
+
+		// Pick a random powerup-class
+		int32 RandomClassIndex = FMath::RandRange(0, PowerupClasses.Num() - 1);
+		TSubclassOf<AActor> RandomPowerupClass = PowerupClasses[RandomClassIndex];
+
+		GetWorld()->SpawnActor<AActor>(RandomPowerupClass, PickedLocation, FRotator::ZeroRotator);
+		UE_LOG(LogTemp, Warning, TEXT("Spawn Powerup %i"), SpawnCounter);
+
+		// Keep for distance checks
+		UsedLocations.Add(PickedLocation);
+		SpawnCounter++;
+	}
+}
+
+// void ARLGameModeBase::OnPowerupSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
+// {
+// 	if (QueryStatus != EEnvQueryStatus::Success)
+// 	{
+// 		UE_LOG(LogTemp, Warning, TEXT("Powerup EQS Query Failed!"));
+// 		return;
+// 	}
+//
+// 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
+//
+// 	// Keep used locations to easily check distance between points
+// 	TArray<FVector> UsedLocations;
+//
+// 	int32 SpawnCounter = 0;
+// 	// Break out if we reached the desired count or if we have no more potential positions remaining
+// 	while (SpawnCounter < DesiredPowerupCount && Locations.Num() > 0)
+// 	{
+// 		// Pick a random location from remaining points.
+// 		int32 RandomLocationIndex = FMath::RandRange(0, Locations.Num() - 1);
+//
+// 		FVector PickedLocation = Locations[RandomLocationIndex];
+// 		// Remove to avoid picking again
+// 		Locations.RemoveAt(RandomLocationIndex);
+//
+// 		// Check minimum distance requirement
+// 		bool bValidLocation = true;
+// 		for (FVector OtherLocation : UsedLocations)
+// 		{
+// 			float DistanceTo = (PickedLocation - OtherLocation).Size();
+//
+// 			if (DistanceTo < RequiredPowerupDistance)
+// 			{
+// 				// Show skipped locations due to distance
+// 				DrawDebugSphere(GetWorld(), PickedLocation, 50.0f, 20, FColor::Red, false, 10.0f);
+//
+// 				// too close, skip to next attempt
+// 				bValidLocation = false;
+// 				break;
+// 			}
+// 		}
+//
+// 		// Failed the distance test
+// 		if (!bValidLocation)
+// 		{
+// 			continue;
+// 		}
+//
+// 		// Pick a random powerup-class
+// 		int32 RandomClassIndex = FMath::RandRange(0, PowerupClasses.Num() - 1);
+// 		TSubclassOf<AActor> RandomPowerupClass = PowerupClasses[RandomClassIndex];
+//
+// 		GetWorld()->SpawnActor<AActor>(RandomPowerupClass, PickedLocation, FRotator::ZeroRotator);
+// 		UE_LOG(LogTemp, Warning, TEXT("Spawn Powerup %i"), SpawnCounter);
+//
+// 		// Keep for distance checks
+// 		UsedLocations.Add(PickedLocation);
+// 		SpawnCounter++;
+// 	}
+// }
 
 void ARLGameModeBase::SpawnBotTimerElapsed()
 {
@@ -68,12 +216,12 @@ void ARLGameModeBase::SpawnBotTimerElapsed()
 		this, SpawnBotQuery,this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 
 	if (ensure(QueryInstance)) {
-		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ARLGameModeBase::OnQueryCompleted);
+		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ARLGameModeBase::OnBotSpawnQueryCompleted);
 	}
 	
 }
 
-void ARLGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
+void ARLGameModeBase::OnBotSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
 {
 	if (!QueryStatus == EEnvQueryStatus::Success)
 	{
@@ -107,19 +255,29 @@ void ARLGameModeBase::KillAll()
 
 void ARLGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 {
-	ARLCharacter* Player = Cast<ARLCharacter>(VictimActor);
-	if (Player != nullptr)
+	//UE_LOG(LogTemp,Warning, TEXT("OnActorKilled: Victim = %s, Killer = %s"), *GetNameSafe(VictimActor), *GetNameSafe(Killer));
+	
+	ARLCharacter* PlayerCharacter = Cast<ARLCharacter>(VictimActor);
+	if (PlayerCharacter != nullptr)
 	{
 		FTimerHandle TimerHandle_RespawnDelay;
 
 		FTimerDelegate Delegate;
-		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
+		Delegate.BindUFunction(this, "RespawnPlayerElapsed", PlayerCharacter->GetController());
 
 		float RespawnDelay = 2.0f;
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
 	}
 
-	//UE_LOG(LogTemp,Warning, TEXT("OnActorKilled: Victim = %s, Killer = %s"), *GetNameSafe(VictimActor), *GetNameSafe(Killer));
+	APawn* KillerPawn = Cast<APawn>(Killer);
+	if (KillerPawn != nullptr)
+	{
+		ARLPlayerState* PlayerState = KillerPawn->GetPlayerState<ARLPlayerState>();
+		if (PlayerState != nullptr)
+		{
+			PlayerState->AddCredits(CreditsPerKill);
+		}
+	}
 }
 
 void ARLGameModeBase::RespawnPlayerElapsed(AController* Controller)

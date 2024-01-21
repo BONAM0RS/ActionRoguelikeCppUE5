@@ -3,13 +3,12 @@
 #include "RLHealPowerup.h"
 
 #include "ActorComponents/RLAttributeComponent.h"
+#include "Core/RLPlayerState.h"
 
 
 ARLHealPowerup::ARLHealPowerup()
 {
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MeshComp->SetupAttachment(RootComponent);
+	CreditsCost = 50;
 }
 
 void ARLHealPowerup::Interact_Implementation(APawn* InstigatorPawn)
@@ -22,10 +21,14 @@ void ARLHealPowerup::Interact_Implementation(APawn* InstigatorPawn)
 	// IsFullHealth is optional, because ApplyHealthChange return bool
 	if (ensure(AttributeComp) && !AttributeComp->IsFullHealth())
 	{
-		if (AttributeComp->ApplyHealthChange(this, AttributeComp->GetMaxHealth()))
+		if (ARLPlayerState* PlayerState = InstigatorPawn->GetPlayerState<ARLPlayerState>())
 		{
-			HideAndCooldownPowerup();
+			if (PlayerState->RemoveCredits(CreditsCost) && AttributeComp->ApplyHealthChange(this, AttributeComp->GetMaxHealth()))
+			{
+				HideAndCooldownPowerup();
+			}
 		}
+		
 	}
 	
 }
