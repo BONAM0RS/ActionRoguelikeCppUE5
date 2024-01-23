@@ -16,7 +16,7 @@ void URLActionComponent::BeginPlay()
 	Super::BeginPlay();
 
 	for (TSubclassOf<URLAction> ActionClass : DefaultActions) {
-		AddAction(ActionClass);
+		AddAction(ActionClass, GetOwner());
 	}
 }
 
@@ -28,7 +28,7 @@ void URLActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
 }
 
-void URLActionComponent::AddAction(TSubclassOf<URLAction> ActionClass)
+void URLActionComponent::AddAction(TSubclassOf<URLAction> ActionClass, AActor* Instigator)
 {
 	if (!ensure(ActionClass)) {
 		return;
@@ -38,7 +38,22 @@ void URLActionComponent::AddAction(TSubclassOf<URLAction> ActionClass)
 	if (ensure(NewAction))
 	{
 		Actions.Add(NewAction);
+
+		if (NewAction->bAutoStart && ensure(NewAction->CanStart(Instigator)))
+		{
+			NewAction->StartAction(Instigator);
+		}
 	}
+}
+
+void URLActionComponent::RemoveAction(URLAction* ActionToRemove)
+{
+	if (!ensure(ActionToRemove != nullptr && !ActionToRemove->IsRunning()))
+	{
+		return;
+	}
+	
+	Actions.Remove(ActionToRemove);
 }
 
 bool URLActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
@@ -47,7 +62,7 @@ bool URLActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 	{
 		if (Action != nullptr && Action->ActionName == ActionName)
 		{
-			// maybe get rif of continue
+			//TODO: maybe get rif of continue
 			if (!Action->CanStart(Instigator))
 			{
 				FString FailedMsg = FString::Printf(TEXT("Failed to run: %s"), *ActionName.ToString());

@@ -18,7 +18,6 @@ public:
 	URLAction_ProjectileAttack();
 	
 	//void StartAction(AActor* Instigator);
-
 	virtual void StartAction_Implementation(AActor* Instigator) override;
 
 protected:
@@ -28,24 +27,24 @@ protected:
 	FVector CalculateProjectileTargetPoint(ACharacter* InstigatorCharacter);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Attack")
 	TSubclassOf<ARLProjectileBase> ProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Attack")
 	FName MuzzleSocketName;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Attack")
 	float AttackAnimDelay;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Attack")
 	UAnimMontage* AttackAnim;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Attack")
 	UParticleSystem* CastingEffect;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Attack")
 	float TraceLength;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Attack")
 	float TraceSphereRadius;
 };

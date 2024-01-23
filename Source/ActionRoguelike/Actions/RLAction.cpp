@@ -7,6 +7,7 @@
 
 URLAction::URLAction()
 {
+	bAutoStart = false;
 	bIsRunning = false;
 }
 
@@ -24,7 +25,7 @@ void URLAction::StopAction_Implementation(AActor* Instigator)
 {
 	UE_LOG(LogTemp,Warning,TEXT("Stop: %s"), *GetNameSafe(this));
 
-	// always check to be sure we don't call StopAction when bIsRunning = false;
+	// always check to be sure we don't call StopAction when bIsRunning = false, so it's already stopped;
 	ensureAlways(bIsRunning);
 
 	URLActionComponent* ActionComp = GetOwningComponent();
@@ -55,15 +56,26 @@ bool URLAction::IsRunning() const
 // Because it's UObject we should override this to have access to spawn actors, line traces etc functionality in blueprints
 UWorld* URLAction::GetWorld() const
 {
-	// Outer is set when creating action via NewObject<T>
-	UActorComponent* Comp = Cast<UActorComponent>(GetOuter());
+	UActorComponent* Comp = GetOwningComponent();
 	if (Comp != nullptr) {
 		return Comp->GetWorld();
 	}
 	return nullptr;
 }
 
+void URLAction::SetWorldTimer(FTimerHandle& InOutHandle, FTimerDelegate const& InDelegate, float InRate, bool InbLoop,
+	float InFirstDelay)
+{
+	GetWorld()->GetTimerManager().SetTimer(InOutHandle, InDelegate, InRate, InbLoop, InFirstDelay);
+}
+
+void URLAction::ClearWorldTimer(FTimerHandle& InHandle)
+{
+	GetWorld()->GetTimerManager().ClearTimer(InHandle);
+}
+
 URLActionComponent* URLAction::GetOwningComponent() const
 {
+	// Outer is set when creating action via NewObject<T>
 	return Cast<URLActionComponent>(GetOuter());
 }

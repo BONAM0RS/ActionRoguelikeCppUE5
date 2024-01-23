@@ -8,6 +8,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Utility/RLGameplayFunctionLibrary.h"
+#include "Actions/RLAction_Effect.h"
 
 
 ARLMageProjectile::ARLMageProjectile()
@@ -30,16 +31,6 @@ void ARLMageProjectile::OnSphereComponentBeginOverlap(UPrimitiveComponent* Overl
 	// don't forget to add check of instigator on hit event
 	if (OtherActor != nullptr && OtherActor != GetInstigator())
 	{
-		// UActorComponent* FoundActorComponent = OtherActor->GetComponentByClass(URLAttributeComponent::StaticClass());
-		// if (FoundActorComponent)
-		// {
-		// 	URLAttributeComponent* AttributeComponent = Cast<URLAttributeComponent>(FoundActorComponent);
-		// 	AttributeComponent->ApplyHealthChange(GetInstigator(), -DamageAmount);
-		//
-		// 	//UE_LOG(LogTemp,Warning,TEXT("%S"), __FUNCTION__);
-		// 	Explode();
-		// }
-
 		URLActionComponent* ActionComp = Cast<URLActionComponent>(OtherActor->GetComponentByClass(URLActionComponent::StaticClass()));
 		if (ActionComp != nullptr && ActionComp->ActiveGameplayTags.HasTag(ParryTag))
 		{
@@ -51,6 +42,11 @@ void ARLMageProjectile::OnSphereComponentBeginOverlap(UPrimitiveComponent* Overl
 		if (URLGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
 		{
 			Explode();
+
+			if (ActionComp)
+			{
+				ActionComp->AddAction(BurningActionEffectClass, GetInstigator());
+			}
 		}
 	}
 }

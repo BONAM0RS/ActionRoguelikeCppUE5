@@ -8,6 +8,8 @@
 #include "RLMageProjectile.generated.h"
 
 
+class URLAction_Effect;
+
 UCLASS(Abstract)
 class ACTIONROGUELIKE_API ARLMageProjectile : public ARLProjectileBase
 {
@@ -33,4 +35,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Config")
 	FGameplayTag ParryTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config")
+	TSubclassOf<URLAction_Effect> BurningActionEffectClass;
 };
