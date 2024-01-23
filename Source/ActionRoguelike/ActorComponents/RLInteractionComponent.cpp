@@ -3,16 +3,22 @@
 #include "RLInteractionComponent.h"
 
 #include "ActionRoguelike/Interfaces/RLGameplayInterface.h"
+#include "ActionRoguelike/UI/RLWorldUserWidget.h"
+#include "Blueprint/UserWidget.h"
 
 
 static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("su.InteractionDebugDraw"), false,
-	TEXT("Enable Debug Lines for Interact Component"), ECVF_Cheat);
+                                                           TEXT("Enable Debug Lines for Interact Component"), ECVF_Cheat);
 
 
 URLInteractionComponent::URLInteractionComponent()
+	: TraceDistance(500.0f),
+	  TraceRadius(30.0f),
+	  TraceCollisionChannel(ECC_WorldDynamic),
+	  FocusedActor(nullptr),
+	  DefaultWidgetInstance(nullptr)
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 
@@ -26,9 +32,11 @@ void URLInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// replace with timer instead call it on tick
+	FindBestInteractable();
 }
 
-void URLInteractionComponent::PrimaryInteract()
+void URLInteractionComponent::FindBestInteractable()
 {
 	AActor* Owner = GetOwner();
 	FVector ViewPointLocation;
@@ -36,25 +44,27 @@ void URLInteractionComponent::PrimaryInteract()
 	Owner->GetActorEyesViewPoint(ViewPointLocation, ViewPointRotation);
 	
 	FVector StartLocation = ViewPointLocation;
-	FVector EndLocation = ViewPointLocation + (ViewPointRotation.Vector() * 1000.f);
+	FVector EndLocation = ViewPointLocation + (ViewPointRotation.Vector() * TraceDistance);
 
 	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(TraceCollisionChannel);
 
 	FCollisionShape CollisionShape;
-	float Radius = 30.0f;
-	CollisionShape.SetSphere(Radius);
+	CollisionShape.SetSphere(TraceRadius);
 	
 	TArray<FHitResult> HitResults;
 	bool bBlockingHit = GetWorld()->SweepMultiByObjectType(HitResults, StartLocation, EndLocation, FQuat::Identity, ObjectQueryParams, CollisionShape);
 
 	bool bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
 	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
+
+	// clear ref before trying to fill
+	FocusedActor = nullptr;
 	
 	for (FHitResult HitResult: HitResults)
 	{
 		if (bDebugDraw) {
-			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, TraceRadius, 32, LineColor, false, 2.0f);
 		}
 		
 		AActor* HitActor = HitResult.GetActor();
@@ -62,8 +72,7 @@ void URLInteractionComponent::PrimaryInteract()
 		{
 			if (HitActor->Implements<URLGameplayInterface>())
 			{
-				APawn* Pawn = Cast<APawn>(Owner);
-				IRLGameplayInterface::Execute_Interact(HitActor, Pawn);
+				FocusedActor = HitActor;
 				break;
 			}
 		}
@@ -72,5 +81,41 @@ void URLInteractionComponent::PrimaryInteract()
 	if (bDebugDraw) {
 		DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, 2.0f, 0, 2.0f);
 	}
+	
+	if (FocusedActor != nullptr)
+	{
+		if (DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
+		{
+			DefaultWidgetInstance = CreateWidget<URLWorldUserWidget>(GetWorld(), DefaultWidgetClass);
+		}
+
+		if (DefaultWidgetInstance != nullptr)
+		{
+			DefaultWidgetInstance->AttachedActor = FocusedActor;
+			if (!DefaultWidgetInstance->IsInViewport())
+			{
+				DefaultWidgetInstance->AddToViewport();
+			}
+		}
+	}
+	else
+	{
+		if (DefaultWidgetInstance != nullptr)
+		{
+			DefaultWidgetInstance->RemoveFromParent();
+		}
+	}
+}
+
+void URLInteractionComponent::PrimaryInteract()
+{
+	if (FocusedActor == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "No Focused Actor to Interact");
+		return;
+	}
+	
+	APawn* Pawn = Cast<APawn>(GetOwner());
+	IRLGameplayInterface::Execute_Interact(FocusedActor, Pawn);
 }
 
