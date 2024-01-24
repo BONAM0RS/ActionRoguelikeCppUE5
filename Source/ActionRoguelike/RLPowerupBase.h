@@ -29,6 +29,9 @@ protected:
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USceneComponent* SceneComp;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* SphereComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")

@@ -32,8 +32,12 @@ void URLInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// replace with timer instead call it on tick
-	FindBestInteractable();
+	APawn* PawnOwner = Cast<APawn>(GetOwner());
+	if (PawnOwner->IsLocallyControlled())
+	{
+		// replace with timer instead call it on tick
+		FindBestInteractable();
+	}
 }
 
 void URLInteractionComponent::FindBestInteractable()
@@ -64,7 +68,7 @@ void URLInteractionComponent::FindBestInteractable()
 	for (FHitResult HitResult: HitResults)
 	{
 		if (bDebugDraw) {
-			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, TraceRadius, 32, LineColor, false, 2.0f);
+			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, TraceRadius, 32, LineColor, false, 0.0f);
 		}
 		
 		AActor* HitActor = HitResult.GetActor();
@@ -79,7 +83,7 @@ void URLInteractionComponent::FindBestInteractable()
 	}
 
 	if (bDebugDraw) {
-		DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, 2.0f, 0, 2.0f);
+		DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, 0.0f, 0, 2.0f);
 	}
 	
 	if (FocusedActor != nullptr)
@@ -109,13 +113,18 @@ void URLInteractionComponent::FindBestInteractable()
 
 void URLInteractionComponent::PrimaryInteract()
 {
-	if (FocusedActor == nullptr)
+	ServerInteract(FocusedActor);
+}
+
+void URLInteractionComponent::ServerInteract_Implementation(AActor* InFocusActor)
+{
+	if (InFocusActor == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "No Focused Actor to Interact");
 		return;
 	}
 	
 	APawn* Pawn = Cast<APawn>(GetOwner());
-	IRLGameplayInterface::Execute_Interact(FocusedActor, Pawn);
+	IRLGameplayInterface::Execute_Interact(InFocusActor, Pawn);
 }
 

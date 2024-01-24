@@ -9,15 +9,21 @@ ARLPowerupBase::ARLPowerupBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	SceneComp = CreateDefaultSubobject<USceneComponent>("SceneComp");
+	RootComponent = SceneComp;
+
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	SphereComp->SetCollisionProfileName("Powerup");
-	RootComponent = SphereComp;
+	SphereComp->SetupAttachment(RootComponent);
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MeshComp->SetupAttachment(RootComponent);
+	MeshComp->SetupAttachment(SphereComp);
 
 	RespawnTime = 10.f;
+
+	//TODO: SetReplicates called on non-initialized actor. Directly setting bReplicates is the correct procedure for pre-init actors.
+	SetReplicates(true);
 }
 
 void ARLPowerupBase::Interact_Implementation(APawn* InstigatorPawn)

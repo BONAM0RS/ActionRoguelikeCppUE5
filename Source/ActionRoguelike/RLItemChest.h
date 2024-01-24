@@ -27,4 +27,16 @@ protected:
 
 	UPROPERTY(EditAnywhere);
 	float TargetPitch;
+	
+protected:
+	void InteractWithLid();
+	
+protected:
+	// ReplicatedUsing = RepNotify, but it calls function only for clients unlike RepNotify in BP!
+	UPROPERTY(ReplicatedUsing = "OnRep_LidOpened", BlueprintReadOnly)
+	bool bLidOpened;
+
+protected:
+	UFUNCTION()
+	void OnRep_LidOpened();
 };
