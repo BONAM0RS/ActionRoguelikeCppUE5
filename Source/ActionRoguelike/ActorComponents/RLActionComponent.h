@@ -36,6 +36,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
 
+protected:
+	UFUNCTION(Server, Reliable)
+	void ServerStartAction(AActor* Instigator, FName ActionName);
+
 public:
 	// You need add header include because it is not a pointer (that's why forward declaration is not enough),
 	// so compiler needs to know size of struct

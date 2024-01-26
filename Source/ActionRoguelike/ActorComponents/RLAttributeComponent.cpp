@@ -3,10 +3,11 @@
 #include "RLAttributeComponent.h"
 
 #include "ActionRoguelike/Core/RLGameModeBase.h"
+#include "Net/UnrealNetwork.h"
 
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("su.DamageMultiplier"), 1.0f,
-	TEXT("Global Damage Modifier for Attribute Component"), ECVF_Cheat);
+                                                        TEXT("Global Damage Modifier for Attribute Component"), ECVF_Cheat);
 
 
 URLAttributeComponent::URLAttributeComponent()
@@ -15,6 +16,9 @@ URLAttributeComponent::URLAttributeComponent()
 
 	MaxHealth = 100.f;
 	CurrentHealth = MaxHealth;
+
+	// We should use SetIsReplicatedByDefault for components instead SetReplicates because of another init flow in actor component constructor
+	SetIsReplicatedByDefault(true);
 }
 
 bool URLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
@@ -34,8 +38,12 @@ bool URLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	CurrentHealth = FMath::Clamp(CurrentHealth + Delta, 0.0f, MaxHealth);
 	float RealDelta = CurrentHealth - OldCurrentHealth;
 
-	OnHealthChanged.Broadcast(InstigatorActor, this, CurrentHealth, RealDelta);
-
+	//OnHealthChanged.Broadcast(InstigatorActor, this, CurrentHealth, RealDelta);
+	if (RealDelta != 0.0f)
+	{
+		MulticastHealthChanged(InstigatorActor, CurrentHealth, RealDelta);
+	}
+	
 	// Died
 	if (RealDelta < 0.0f && CurrentHealth == 0.0f)
 	{
@@ -73,6 +81,15 @@ float URLAttributeComponent::GetCurrentHealth() const
 	return CurrentHealth;
 }
 
+URLAttributeComponent* URLAttributeComponent::GetAttributes(AActor* FromActor)
+{
+	if (FromActor != nullptr) {
+		return Cast<URLAttributeComponent>(FromActor->GetComponentByClass(URLAttributeComponent::StaticClass()));
+	}
+
+	return nullptr;
+}
+
 bool URLAttributeComponent::IsActorAlive(AActor* Actor)
 {
 	URLAttributeComponent* AttributeComp = GetAttributes(Actor);
@@ -83,14 +100,20 @@ bool URLAttributeComponent::IsActorAlive(AActor* Actor)
 	return false;
 }
 
-URLAttributeComponent* URLAttributeComponent::GetAttributes(AActor* FromActor)
+void URLAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
 {
-	if (FromActor != nullptr) {
-		return Cast<URLAttributeComponent>(FromActor->GetComponentByClass(URLAttributeComponent::StaticClass()));
-	}
-
-	return nullptr;
+	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
 }
 
+void URLAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(URLAttributeComponent, MaxHealth);
+	DOREPLIFETIME(URLAttributeComponent, CurrentHealth);
+
+	/** Secondary condition to check before considering the replication of a lifetime property. */
+	//DOREPLIFETIME_CONDITION(URLAttributeComponent, MaxHealth, COND_OwnerOnly);
+}
 
 

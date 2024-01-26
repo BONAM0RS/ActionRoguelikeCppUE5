@@ -17,7 +17,7 @@ class ACTIONROGUELIKE_API URLWorldUserWidget : public UUserWidget
 public:
 	URLWorldUserWidget(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void CustomInitialize();
 
 protected:
