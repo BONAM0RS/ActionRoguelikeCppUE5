@@ -2,45 +2,52 @@
 
 #include "RLAction.h"
 
+#include "ActionRoguelike/ActionRoguelike.h"
 #include "ActionRoguelike/ActorComponents/RLActionComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 URLAction::URLAction()
+	: ActionComp(nullptr)
 {
 	bAutoStart = false;
-	bIsRunning = false;
+}
+
+void URLAction::Initialize(URLActionComponent* NewActionComp)
+{
+	ActionComp = NewActionComp;
 }
 
 void URLAction::StartAction_Implementation(AActor* Instigator)
 {
 	UE_LOG(LogTemp,Warning,TEXT("Running: %s"), *GetNameSafe(this));
-
-	URLActionComponent* ActionComp = GetOwningComponent();
+	//LogOnScreen(this, FString::Printf(TEXT("Started: %s"), *ActionName.ToString()), FColor::Green);
+	
 	ActionComp->ActiveGameplayTags.AppendTags(GrantsTags);
 
-	bIsRunning = true;
+	RepData.bIsRunning = true;
+	RepData.Instigator = Instigator;
 }
 
 void URLAction::StopAction_Implementation(AActor* Instigator)
 {
 	UE_LOG(LogTemp,Warning,TEXT("Stop: %s"), *GetNameSafe(this));
+	//LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
 
 	// always check to be sure we don't call StopAction when bIsRunning = false, so it's already stopped;
-	ensureAlways(bIsRunning);
-
-	URLActionComponent* ActionComp = GetOwningComponent();
+	//ensureAlways(bIsRunning); // no need to check is on clients
+	
 	ActionComp->ActiveGameplayTags.RemoveTags(GrantsTags);
 
-	bIsRunning = false;
+	RepData.bIsRunning = false;
 }
 
 bool URLAction::CanStart_Implementation(AActor* Instigator)
 {
-	if (bIsRunning) {
+	if (RepData.bIsRunning) {
 		return false;
 	}
-		
-	URLActionComponent* ActionComp = GetOwningComponent();
+	
 	if (ActionComp->ActiveGameplayTags.HasAny(BlockedTags)) {
 		return false;
 	}
@@ -50,17 +57,22 @@ bool URLAction::CanStart_Implementation(AActor* Instigator)
 
 bool URLAction::IsRunning() const
 {
-	return bIsRunning;
+	return RepData.bIsRunning;
 }
 
 // Because it's UObject we should override this to have access to spawn actors, line traces etc functionality in blueprints
 UWorld* URLAction::GetWorld() const
 {
-	UActorComponent* Comp = GetOwningComponent();
-	if (Comp != nullptr) {
-		return Comp->GetWorld();
+	AActor* Actor = Cast<AActor>(GetOuter());
+	if (Actor != nullptr) {
+		return Actor->GetWorld();
 	}
 	return nullptr;
+}
+
+URLActionComponent* URLAction::GetOwningComponent() const
+{
+	return ActionComp;
 }
 
 void URLAction::SetWorldTimer(FTimerHandle& InOutHandle, FTimerDelegate const& InDelegate, float InRate, bool InbLoop,
@@ -74,8 +86,22 @@ void URLAction::ClearWorldTimer(FTimerHandle& InHandle)
 	GetWorld()->GetTimerManager().ClearTimer(InHandle);
 }
 
-URLActionComponent* URLAction::GetOwningComponent() const
+void URLAction::OnRep_RepDataChanged()
 {
-	// Outer is set when creating action via NewObject<T>
-	return Cast<URLActionComponent>(GetOuter());
+	if (RepData.bIsRunning)
+	{
+		StartAction(RepData.Instigator);
+	}
+	else
+	{
+		StopAction(RepData.Instigator);
+	}
+}
+
+void URLAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(URLAction, RepData);
+	DOREPLIFETIME(URLAction, ActionComp);
 }

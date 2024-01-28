@@ -42,8 +42,7 @@ void URLAction_Effect::StopAction_Implementation(AActor* Instigator)
 
 	ClearWorldTimer(PeriodHandle);
 	ClearWorldTimer(DurationHandle);
-
-	URLActionComponent* ActionComp = GetOwningComponent();
+	
 	if (ActionComp != nullptr)
 	{
 		ActionComp->RemoveAction(this);

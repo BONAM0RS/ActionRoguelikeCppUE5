@@ -43,7 +43,8 @@ void ARLMageProjectile::OnSphereComponentBeginOverlap(UPrimitiveComponent* Overl
 		{
 			Explode();
 
-			if (ActionComp)
+			// Is Server?
+			if (ActionComp && HasAuthority())
 			{
 				ActionComp->AddAction(BurningActionEffectClass, GetInstigator());
 			}

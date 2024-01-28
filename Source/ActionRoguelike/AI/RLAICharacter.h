@@ -25,14 +25,17 @@ protected:
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
 
-	void SetTargetActor(AActor* NewTarget);
-
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta);
-
+	
+	void SetTargetActor(AActor* NewTarget);
+	
 	void HideHitDamageEffect();
 	
 public:
+	UFUNCTION(BlueprintCallable, Category = "AI")
+	AActor* GetTargetActor() const;
+	
 	float GetDamageAmount();
 	
 	FName GetMuzzleShotSocketName();
@@ -64,4 +67,12 @@ protected:
 
 	UPROPERTY()
 	URLWorldUserWidget* ActiveHealthBarWidget;
+
+	/* Key for AI Blackboard 'TargetActor' */
+	UPROPERTY(VisibleAnywhere, Category = "Config | Names")
+	FName TargetActorKey;
+
+	/* Widget to display when bot first sees a player. */
+	UPROPERTY(EditDefaultsOnly, Category = "Config | UI")
+	TSubclassOf<UUserWidget> SpottedWidgetClass;
 };

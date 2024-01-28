@@ -40,6 +40,14 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerStartAction(AActor* Instigator, FName ActionName);
 
+	UFUNCTION(Server, Reliable)
+	void ServerStopAction(AActor* Instigator, FName ActionName);
+
+public:
+	/* Returns first occurrence of action matching the class provided */
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+	URLAction* GetAction(TSubclassOf<URLAction> ActionClass) const;
+
 public:
 	// You need add header include because it is not a pointer (that's why forward declaration is not enough),
 	// so compiler needs to know size of struct
@@ -47,10 +55,12 @@ public:
 	FGameplayTagContainer ActiveGameplayTags;
 	
 protected:
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<URLAction*> Actions;
 	
 	UPROPERTY(EditAnywhere, Category = "Actions")
 	TArray<TSubclassOf<URLAction>> DefaultActions;
-	
+
+protected:
+	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
 };

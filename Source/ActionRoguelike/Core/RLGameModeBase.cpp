@@ -24,6 +24,7 @@ ARLGameModeBase::ARLGameModeBase()
 	DesiredPowerupCount = 10;
 	RequiredPowerupDistance = 2000;
 
+	bSpawnBots = false;
 	SpawnTimerInterval = 2.0f;
 
 	CreditsPerKill = 20;
@@ -177,6 +178,12 @@ void ARLGameModeBase::OnPowerupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> R
 
 void ARLGameModeBase::SpawnBotTimerElapsed()
 {
+	if (!bSpawnBots)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("Bot spawning disabled via GameMode settings"));
+		return;
+	}
+	
 	if (!CVarSpawnBots.GetValueOnGameThread())
 	{
 		UE_LOG(LogTemp,Warning,TEXT("Bot spawning disabled via 'CVarSpawnBots'"));

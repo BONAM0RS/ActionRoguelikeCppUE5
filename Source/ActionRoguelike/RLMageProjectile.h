@@ -30,6 +30,7 @@ public:
 
 protected:
 	//ExposeOnSpawn allow to set property in spawn actor from class node
+	//TODO: hide it from editing in default, just expose it
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ExposeOnSpawn="true"), Category = "Config")
 	float DamageAmount;
 

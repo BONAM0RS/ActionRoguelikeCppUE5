@@ -31,10 +31,14 @@ void URLAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
 		UGameplayStatics::SpawnEmitterAttached(CastingEffect, Character->GetMesh(), MuzzleSocketName,
 		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 
-		FTimerHandle TimerHandle_AttackDelay;
-		FTimerDelegate Delegate;
-		Delegate.BindUFunction(this, "AttackDelay_Elapsed", Character);
-		SetWorldTimer(TimerHandle_AttackDelay, Delegate, AttackAnimDelay, false);
+		// Is Server?
+		if (Character->HasAuthority())
+		{
+			FTimerHandle TimerHandle_AttackDelay;
+			FTimerDelegate Delegate;
+			Delegate.BindUFunction(this, "AttackDelay_Elapsed", Character);
+			SetWorldTimer(TimerHandle_AttackDelay, Delegate, AttackAnimDelay, false);
+		}
 	}
 }
 

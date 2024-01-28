@@ -6,6 +6,7 @@
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "ActionRoguelike/ActorComponents/RLInteractionComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -153,11 +154,15 @@ void ARLCharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponen
 	if (Delta < 0.0f)
 	{
 		float ParameterValue = FMath::Abs(Delta) / AttributeComponent->GetMaxHealth();
-		//UE_LOG(LogTemp,Warning,TEXT("%S: ParameterValue = %f"), __FUNCTION__, ParameterValue);
 		GetMesh()->SetScalarParameterValueOnMaterials(HitDamageParamName, ParameterValue);
+		//UE_LOG(LogTemp,Warning,TEXT("%S: ParameterValue = %f"), __FUNCTION__, ParameterValue);
 
 		FTimerHandle TimerHandle_HideHitDamageEffect;
 		GetWorldTimerManager().SetTimer(TimerHandle_HideHitDamageEffect, this, &ARLCharacter::HideHitDamageEffect, HideDamageHitEffectDelay);
+
+		// Rage added equal to damage received (Abs to turn into positive rage number)
+		float RageDelta = FMath::Abs(Delta);
+		AttributeComponent->ApplyRageChange(InstigatorActor, RageDelta);
 	}
 	
 	// Is Dead
@@ -166,7 +171,11 @@ void ARLCharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponen
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		DisableInput(PlayerController);
 
-		// don't forget to disable capsule
+		// disable capsule
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		// destroy 
+		SetLifeSpan(10.0f);
 	}
 }
 

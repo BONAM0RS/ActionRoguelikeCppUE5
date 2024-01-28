@@ -8,6 +8,21 @@
 
 class URLActionComponent;
 
+
+USTRUCT()
+struct FActionRepData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	bool bIsRunning = false;;
+
+	UPROPERTY()
+	AActor* Instigator = nullptr;
+};
+
+
 //TODO: should be abstract
 UCLASS(Blueprintable)
 class ACTIONROGUELIKE_API URLAction : public UObject
@@ -16,6 +31,8 @@ class ACTIONROGUELIKE_API URLAction : public UObject
 
 public:
 	URLAction();
+
+	void Initialize(URLActionComponent* NewActionComp);
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
 	void StartAction(AActor* Instigator);
@@ -33,14 +50,14 @@ public:
 	virtual UWorld* GetWorld() const override;
 
 protected:
-	// just to get rid of typing GetWorld()->GetTimerManager().SetTimer/ClearTimer
-	void SetWorldTimer(FTimerHandle& InOutHandle, FTimerDelegate const& InDelegate, float InRate, bool InbLoop, float InFirstDelay = -1.f);
-	void ClearWorldTimer(FTimerHandle& InHandle);
-
 	// Outer is set when creating action via NewObject<T>
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	URLActionComponent* GetOwningComponent() const;
 	
+	// just to get rid of typing GetWorld()->GetTimerManager().SetTimer/ClearTimer
+	void SetWorldTimer(FTimerHandle& InOutHandle, FTimerDelegate const& InDelegate, float InRate, bool InbLoop, float InFirstDelay = -1.f);
+	void ClearWorldTimer(FTimerHandle& InHandle);
+
 public:
 	// Start immediately when added to an action component
 	UPROPERTY(EditDefaultsOnly, Category = "Config | Action")
@@ -59,5 +76,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | Action")
 	FGameplayTagContainer BlockedTags;
 
-	bool bIsRunning;
+protected:
+	UPROPERTY(Replicated)
+	URLActionComponent* ActionComp;
+
+protected:
+	UPROPERTY(ReplicatedUsing = "OnRep_RepDataChanged")
+	FActionRepData RepData;
+	
+	UFUNCTION()
+	void OnRep_RepDataChanged();
+
+	virtual bool IsSupportedForNetworking() const override
+	{
+		return true;
+	}
 };

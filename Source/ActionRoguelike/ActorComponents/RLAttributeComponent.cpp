@@ -17,6 +17,9 @@ URLAttributeComponent::URLAttributeComponent()
 	MaxHealth = 100.f;
 	CurrentHealth = MaxHealth;
 
+	MaxRage = 100.f;
+	CurrentRage = 0.f;
+
 	// We should use SetIsReplicatedByDefault for components instead SetReplicates because of another init flow in actor component constructor
 	SetIsReplicatedByDefault(true);
 }
@@ -29,31 +32,61 @@ bool URLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 		if (!GetOwner()->CanBeDamaged()) {
 			return false;
 		}
-		
+
+		// apply damage multiplier for test purposes
 		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
 		Delta *= DamageMultiplier;
 	}
 	
 	float OldCurrentHealth = CurrentHealth;
-	CurrentHealth = FMath::Clamp(CurrentHealth + Delta, 0.0f, MaxHealth);
-	float RealDelta = CurrentHealth - OldCurrentHealth;
+	float NewCurrentHealth = FMath::Clamp(CurrentHealth + Delta, 0.0f, MaxHealth);
+	float RealDelta = NewCurrentHealth - OldCurrentHealth;
 
-	//OnHealthChanged.Broadcast(InstigatorActor, this, CurrentHealth, RealDelta);
-	if (RealDelta != 0.0f)
+	// Is Server?
+	if (GetOwner()->HasAuthority())
 	{
-		MulticastHealthChanged(InstigatorActor, CurrentHealth, RealDelta);
-	}
-	
-	// Died
-	if (RealDelta < 0.0f && CurrentHealth == 0.0f)
-	{
-		ARLGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ARLGameModeBase>();
-		if (GameMode != nullptr) {
-			GameMode->OnActorKilled(GetOwner(), InstigatorActor);
+		CurrentHealth = NewCurrentHealth;
+
+		if (RealDelta != 0.0f)
+		{
+			MulticastHealthChanged(InstigatorActor, CurrentHealth, RealDelta);
+		}
+
+		// Died
+		if (RealDelta < 0.0f && CurrentHealth == 0.0f)
+		{
+			ARLGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ARLGameModeBase>();
+			if (GameMode != nullptr) {
+				GameMode->OnActorKilled(GetOwner(), InstigatorActor);
+			}
 		}
 	}
 	
 	return RealDelta != 0.0f;
+}
+
+bool URLAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
+{
+	float OldCurrentRage = CurrentRage;
+	CurrentRage = FMath::Clamp(CurrentRage + Delta, 0.0f, MaxRage);
+	float RealDelta = CurrentRage - OldCurrentRage;
+
+	if (RealDelta != 0.0f)
+	{
+		OnRageChanged.Broadcast(InstigatorActor, this, CurrentRage, RealDelta);
+	}
+	
+	return RealDelta != 0.0f;
+}
+
+void URLAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
+{
+	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
+}
+
+void URLAttributeComponent::MulticastRageChanged_Implementation(AActor* InstigatorActor, float NewRage, float Delta)
+{
+	OnRageChanged.Broadcast(InstigatorActor, this, NewRage, Delta);
 }
 
 bool URLAttributeComponent::Kill(AActor* InstigatorActor)
@@ -81,6 +114,11 @@ float URLAttributeComponent::GetCurrentHealth() const
 	return CurrentHealth;
 }
 
+float URLAttributeComponent::GetCurrentRage() const
+{
+	return CurrentRage;
+}
+
 URLAttributeComponent* URLAttributeComponent::GetAttributes(AActor* FromActor)
 {
 	if (FromActor != nullptr) {
@@ -100,11 +138,6 @@ bool URLAttributeComponent::IsActorAlive(AActor* Actor)
 	return false;
 }
 
-void URLAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
-{
-	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
-}
-
 void URLAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -112,6 +145,9 @@ void URLAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(URLAttributeComponent, MaxHealth);
 	DOREPLIFETIME(URLAttributeComponent, CurrentHealth);
 
+	DOREPLIFETIME(URLAttributeComponent, MaxRage);
+	DOREPLIFETIME(URLAttributeComponent, CurrentRage);
+	
 	/** Secondary condition to check before considering the replication of a lifetime property. */
 	//DOREPLIFETIME_CONDITION(URLAttributeComponent, MaxHealth, COND_OwnerOnly);
 }

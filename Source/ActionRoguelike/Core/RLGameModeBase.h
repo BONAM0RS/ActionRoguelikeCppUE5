@@ -58,6 +58,9 @@ protected:
 	/* Amount of powerups to spawn during match start */
 	UPROPERTY(EditDefaultsOnly, Category = "Config | Powerups")
 	int32 DesiredPowerupCount;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config | AI")
+	bool bSpawnBots;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Config | AI")
 	UCurveFloat* DifficultyCurve;
