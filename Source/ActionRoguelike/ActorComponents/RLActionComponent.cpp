@@ -2,7 +2,7 @@
 
 #include "RLActionComponent.h"
 
-#include "ActionRoguelike/ActionRoguelike.h"
+//#include "ActionRoguelike/ActionRoguelike.h"
 #include "ActionRoguelike/Actions/RLAction.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"

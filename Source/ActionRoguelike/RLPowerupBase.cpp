@@ -33,6 +33,11 @@ void ARLPowerupBase::Interact_Implementation(APawn* InstigatorPawn)
 	// override in derived classes
 }
 
+FText ARLPowerupBase::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::GetEmpty();
+}
+
 void ARLPowerupBase::ShowPowerup()
 {
 	SetPowerupState(true);

@@ -19,6 +19,8 @@ public:
 	
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
+	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
+
 protected:
 	UFUNCTION()
 	void ShowPowerup();
