@@ -7,13 +7,21 @@
 #include "Components/ActorComponent.h"
 #include "RLActionComponent.generated.h"
 
-
 class URLAction;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStateChanged, URLActionComponent*, OwningComp, URLAction*, Action);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONROGUELIKE_API URLActionComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnActionStateChanged OnActionStarted;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActionStateChanged OnActionStopped;
 
 public:	
 	URLActionComponent();
@@ -55,7 +63,7 @@ public:
 	FGameplayTagContainer ActiveGameplayTags;
 	
 protected:
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly,Replicated)
 	TArray<URLAction*> Actions;
 	
 	UPROPERTY(EditAnywhere, Category = "Actions")

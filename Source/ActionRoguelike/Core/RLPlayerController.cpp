@@ -2,8 +2,11 @@
 
 #include "RLPlayerController.h"
 
+#include "Blueprint/UserWidget.h"
+
 
 ARLPlayerController::ARLPlayerController()
+	: PauseMenuInstance(nullptr)
 {
 }
 
@@ -26,6 +29,37 @@ void ARLPlayerController::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	OnPlayerStateChanged.Broadcast(PlayerState);
+}
+
+void ARLPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	InputComponent->BindAction("PauseMenu", IE_Pressed, this, &ARLPlayerController::TogglePauseMenu);
+}
+
+void ARLPlayerController::TogglePauseMenu()
+{
+	// Disable Pause
+	if (PauseMenuInstance != nullptr && PauseMenuInstance->IsInViewport())
+	{
+		PauseMenuInstance->RemoveFromParent();
+		PauseMenuInstance = nullptr;
+
+		bShowMouseCursor = false;
+		SetInputMode(FInputModeGameOnly());
+		return;
+	}
+
+	// Enable Pause
+	PauseMenuInstance = CreateWidget<UUserWidget>(this, PauseMenuClass);
+	if (PauseMenuInstance != nullptr)
+	{
+		PauseMenuInstance->AddToViewport(100);
+
+		bShowMouseCursor = true;
+		SetInputMode(FInputModeUIOnly());
+	}
 }
 
 

@@ -22,6 +22,9 @@ public:
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Effect")
 	void ExecutePeriodicEffect(AActor* Instigator);
+
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	float GetTimeRemaining() const;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Effect")

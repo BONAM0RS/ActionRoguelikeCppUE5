@@ -91,4 +91,13 @@ protected:
 	{
 		return true;
 	}
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	UTexture2D* Icon;
+
+protected:
+	UPROPERTY(Replicated)
+	float TimeStarted;
+	
 };

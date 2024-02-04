@@ -4,6 +4,7 @@
 #include "RLAction_Effect.h"
 
 #include "ActionRoguelike/ActorComponents/RLActionComponent.h"
+#include "GameFramework/GameStateBase.h"
 
 URLAction_Effect::URLAction_Effect()
 	: Duration(0),
@@ -47,6 +48,18 @@ void URLAction_Effect::StopAction_Implementation(AActor* Instigator)
 	{
 		ActionComp->RemoveAction(this);
 	}
+}
+
+float URLAction_Effect::GetTimeRemaining() const
+{
+	AGameStateBase* GameState = GetWorld()->GetGameState<AGameStateBase>();
+	if (GameState != nullptr)
+	{
+		float EndTime = TimeStarted + Duration;
+		return EndTime - GameState->GetServerWorldTimeSeconds();
+	}
+	
+	return Duration;
 }
 
 void URLAction_Effect::ExecutePeriodicEffect_Implementation(AActor* Instigator)

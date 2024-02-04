@@ -2,13 +2,15 @@
 
 #include "RLAction.h"
 
-#include "ActionRoguelike/ActionRoguelike.h"
+//#include "ActionRoguelike/ActionRoguelike.h"
 #include "ActionRoguelike/ActorComponents/RLActionComponent.h"
 #include "Net/UnrealNetwork.h"
 
 
 URLAction::URLAction()
-	: ActionComp(nullptr)
+	: ActionComp(nullptr),
+	  Icon(nullptr),
+	  TimeStarted(0.f)
 {
 	bAutoStart = false;
 }
@@ -27,6 +29,13 @@ void URLAction::StartAction_Implementation(AActor* Instigator)
 
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
+
+	if (GetOwningComponent()->GetOwnerRole() == ROLE_Authority)
+	{
+		TimeStarted = GetWorld()->TimeSeconds;
+	}
+
+	GetOwningComponent()->OnActionStarted.Broadcast(GetOwningComponent(), this);
 }
 
 void URLAction::StopAction_Implementation(AActor* Instigator)
@@ -40,6 +49,8 @@ void URLAction::StopAction_Implementation(AActor* Instigator)
 	ActionComp->ActiveGameplayTags.RemoveTags(GrantsTags);
 
 	RepData.bIsRunning = false;
+
+	GetOwningComponent()->OnActionStopped.Broadcast(GetOwningComponent(), this);
 }
 
 bool URLAction::CanStart_Implementation(AActor* Instigator)
@@ -104,4 +115,5 @@ void URLAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 
 	DOREPLIFETIME(URLAction, RepData);
 	DOREPLIFETIME(URLAction, ActionComp);
+	DOREPLIFETIME(URLAction, TimeStarted);
 }

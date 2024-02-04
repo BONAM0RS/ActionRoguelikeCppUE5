@@ -38,6 +38,18 @@ protected:
 	void BlueprintBeginPlayingState();
 
 	// Option 2, replicatedUsing in Controller, bind to OnPlayerStateChanged in widgets
-	void OnRep_PlayerState() override;
+	virtual void OnRep_PlayerState() override;
+
+protected:
+	virtual void SetupInputComponent() override;
 	
+	UFUNCTION(BlueprintCallable)
+	void TogglePauseMenu();
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> PauseMenuClass;
+
+	UPROPERTY()
+	UUserWidget* PauseMenuInstance;
 };
