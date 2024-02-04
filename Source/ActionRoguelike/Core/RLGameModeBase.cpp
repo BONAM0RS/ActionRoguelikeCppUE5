@@ -7,17 +7,23 @@
 #include "RLPlayerState.h"
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "ActionRoguelike/AI/RLAICharacter.h"
+#include "ActionRoguelike/Interfaces/RLGameplayInterface.h"
+#include "ActionRoguelike/SaveGame/RLSaveGame.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true,
-	TEXT("Enable spawning of bots via timer"), ECVF_Cheat);
+                                                TEXT("Enable spawning of bots via timer"), ECVF_Cheat);
 
 
 ARLGameModeBase::ARLGameModeBase()
-	: PowerupSpawnQuery(nullptr),
+	: CurrentSaveGame(nullptr),
+	  PowerupSpawnQuery(nullptr),
 	  DifficultyCurve(nullptr),
-      SpawnBotQuery(nullptr)
+	  SpawnBotQuery(nullptr)
 {
 	PlayerStateClass = ARLPlayerState::StaticClass();
 
@@ -28,6 +34,126 @@ ARLGameModeBase::ARLGameModeBase()
 	SpawnTimerInterval = 2.0f;
 
 	CreditsPerKill = 20;
+
+	SlotName = "SaveGame_01";
+}
+
+void ARLGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	LoadSaveGame();
+}
+
+void ARLGameModeBase::WriteSaveGame()
+{
+	// Iterate all player states, we don't have proper ID to match yet (requires Steam or EOS)
+	for (int32 i = 0; i < GameState->PlayerArray.Num(); i ++)
+	{
+		ARLPlayerState* PlayerState = Cast<ARLPlayerState>(GameState->PlayerArray[i]);
+		if (PlayerState != nullptr)
+		{
+			PlayerState->SavePlayerState(CurrentSaveGame);
+			break; // single player only at this point
+		}
+	}
+
+	CurrentSaveGame->SavedActors.Empty();
+
+	// Iterate the entire world of actors
+	for (FActorIterator It(GetWorld()); It ; ++It)
+	{
+		AActor* Actor = *It;
+		//Only interested in our 'gameplay actors'
+		if (!Actor->Implements<URLGameplayInterface>())
+		{
+			continue;
+		}
+
+		FActorSaveData ActorData;
+		ActorData.ActorName = Actor->GetName();
+		ActorData.Transform = Actor->GetActorTransform();
+
+		// Pass the array to fill with data from Actor
+		FMemoryWriter MemWriter(ActorData.ByteData);
+		
+		FObjectAndNameAsStringProxyArchive Archive(MemWriter, true);
+
+		//Find only variables with UPROPERTY(SaveGame)
+		Archive.ArIsSaveGame = true;
+
+		// Converts Actor's SaveGame UPROPERTY variables into binary array
+		Actor->Serialize(Archive);
+
+		CurrentSaveGame->SavedActors.Add(ActorData);
+	}
+	
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
+}
+
+void ARLGameModeBase::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0))
+	{
+		CurrentSaveGame = Cast<URLSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+		if (CurrentSaveGame == nullptr)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("Failed to load SaveGame Data"));
+			return;
+		}
+
+		UE_LOG(LogTemp,Log,TEXT("Loaded SaveGame Data"));
+
+		// Iterate the entire world of actors
+		for (FActorIterator It(GetWorld()); It ; ++It)
+		{
+			AActor* Actor = *It;
+			//Only interested in our 'gameplay actors'
+			if (!Actor->Implements<URLGameplayInterface>())
+			{
+				continue;
+			}
+
+			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+			{
+				if (ActorData.ActorName == Actor->GetName())
+				{
+					Actor->SetActorTransform(ActorData.Transform);
+
+					//
+					FMemoryReader MemReader(ActorData.ByteData);
+					FObjectAndNameAsStringProxyArchive Archive(MemReader, true);
+
+					//Find only variables with UPROPERTY(SaveGame)
+					Archive.ArIsSaveGame = true;
+
+					// Converts binary array back into Actor's SaveGame UPROPERTY variables
+					Actor->Serialize(Archive);
+
+					IRLGameplayInterface::Execute_OnActorLoaded(Actor);
+					
+					break;
+				}
+			}
+		}
+	}
+	else
+	{
+		CurrentSaveGame = Cast<URLSaveGame>(UGameplayStatics::CreateSaveGameObject(URLSaveGame::StaticClass()));
+		UE_LOG(LogTemp,Log,TEXT("Created New SaveGame Data"));
+	}
+}
+
+void ARLGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	// Calling Before Super::, so we set variables before 'BeginPlayingState' is called in PlayerController (which is where we init UI in player controller)
+	ARLPlayerState* PlayerState = NewPlayer->GetPlayerState<ARLPlayerState>();
+	if (PlayerState != nullptr)
+	{
+		PlayerState->LoadPlayerState(CurrentSaveGame);
+	}
+
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
 
 void ARLGameModeBase::StartPlay()
@@ -295,3 +421,5 @@ void ARLGameModeBase::RespawnPlayerElapsed(AController* Controller)
 		RestartPlayer(Controller);
 	}
 }
+
+

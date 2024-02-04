@@ -13,3 +13,19 @@ void ARLPlayerController::SetPawn(APawn* InPawn)
 
 	OnPawnChanged.Broadcast(InPawn);
 }
+
+void ARLPlayerController::BeginPlayingState()
+{
+	Super::BeginPlayingState();
+
+	BlueprintBeginPlayingState();
+}
+
+void ARLPlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	OnPlayerStateChanged.Broadcast(PlayerState);
+}
+
+

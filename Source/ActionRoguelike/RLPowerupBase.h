@@ -27,6 +27,8 @@ protected:
 
 	void SetPowerupState(bool bNewIsActive);
 
+	void UpdateCollisionAndVisibility(bool bEnable);
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USceneComponent* SceneComp;
@@ -41,4 +43,10 @@ protected:
 	float RespawnTime;
 
 	FTimerHandle TimerHandle_RespawnTimer;
+
+	UPROPERTY(ReplicatedUsing="OnRep_IsActive")
+	bool bIsActive;
+
+	UFUNCTION()
+	void OnRep_IsActive();
 };

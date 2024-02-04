@@ -6,7 +6,10 @@
 #include "GameFramework/PlayerState.h"
 #include "RLPlayerState.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, ARLPlayerState*, PlayerState, int32, NewCredits, int32, Delta);
+class URLSaveGame;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, ARLPlayerState*, PlayerState, int32, NewCredits,
+                                               int32, Delta);
 
 UCLASS()
 class ACTIONROGUELIKE_API ARLPlayerState : public APlayerState
@@ -16,6 +19,13 @@ class ACTIONROGUELIKE_API ARLPlayerState : public APlayerState
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnCreditsChanged OnCreditsChanged;
+
+public:
+	UFUNCTION(BlueprintNativeEvent)
+	void SavePlayerState(URLSaveGame* SaveGameObject);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void LoadPlayerState(URLSaveGame* SaveGameObject);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Credits")
@@ -28,6 +38,15 @@ public:
 	int32 GetCredits() const;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Config")
+	UPROPERTY(EditDefaultsOnly, ReplicatedUsing="OnRep_Credits", Category = "Config")
 	int32 Credits;
+
+	// OnRep_ can use a parameter containing the 'old value' of the variable it is bound to . Very useful in this case to figure out the 'delta'
+	UFUNCTION()
+	void OnRep_Credits(int32 OldCredits);
+
+	// Downside of using multicast here is that we send over more data the net, since it's a RPC with two params.
+	// OnRep_ is "free" since Credits is already getting replicated anyway
+	//UFUNCTION(NetMulticast, Unreliable);
+	//void MulticastCredits(float NewCredits, float Delta);
 };

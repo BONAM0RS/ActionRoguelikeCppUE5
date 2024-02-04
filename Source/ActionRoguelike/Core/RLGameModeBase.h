@@ -7,6 +7,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "RLGameModeBase.generated.h"
 
+class URLSaveGame;
 class UEnvQueryInstanceBlueprintWrapper;
 class UEnvQuery;
 
@@ -18,7 +19,18 @@ class ACTIONROGUELIKE_API ARLGameModeBase : public AGameModeBase
 
 protected:
 	ARLGameModeBase();
-	
+
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "SaveGame")
+	void WriteSaveGame();
+
+	void LoadSaveGame();
+
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
+protected:
 	virtual void StartPlay() override;
 
 	// UFUNCTION()
@@ -44,6 +56,11 @@ protected:
 	void RespawnPlayerElapsed(AController* Controller);
 
 protected:
+	FString SlotName;
+	
+	UPROPERTY()
+	URLSaveGame* CurrentSaveGame;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Config | Powerups")
 	UEnvQuery* PowerupSpawnQuery;
 
@@ -78,5 +95,6 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Config | Credits")
 	int32 CreditsPerKill;
-	
+
+
 };

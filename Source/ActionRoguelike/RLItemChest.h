@@ -15,6 +15,8 @@ class ACTIONROGUELIKE_API ARLItemChest : public AActor, public IRLGameplayInterf
 public:	
 	ARLItemChest();
 
+	void OnActorLoaded_Implementation() override;
+
 public:	
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
@@ -37,7 +39,7 @@ protected:
 	
 protected:
 	// ReplicatedUsing = RepNotify, but it calls function only for clients unlike RepNotify in BP!
-	UPROPERTY(ReplicatedUsing = "OnRep_LidOpened", BlueprintReadOnly)
+	UPROPERTY(ReplicatedUsing = "OnRep_LidOpened", BlueprintReadOnly, SaveGame)
 	bool bLidOpened;
 	
 };

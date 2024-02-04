@@ -19,6 +19,11 @@ ARLItemChest::ARLItemChest()
 	SetReplicates(true);
 }
 
+void ARLItemChest::OnActorLoaded_Implementation()
+{
+	InteractWithLid();
+}
+
 void ARLItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
 	// toggle

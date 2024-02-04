@@ -3,6 +3,7 @@
 #include "RLPowerupBase.h"
 
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 ARLPowerupBase::ARLPowerupBase()
@@ -21,6 +22,7 @@ ARLPowerupBase::ARLPowerupBase()
 	MeshComp->SetupAttachment(SphereComp);
 
 	RespawnTime = 10.f;
+	bIsActive = true;
 
 	//TODO: SetReplicates called on non-initialized actor. Directly setting bReplicates is the correct procedure for pre-init actors.
 	SetReplicates(true);
@@ -45,8 +47,26 @@ void ARLPowerupBase::HideAndCooldownPowerup()
 
 void ARLPowerupBase::SetPowerupState(bool bNewIsActive)
 {
-	SetActorEnableCollision(bNewIsActive);
-	RootComponent->SetVisibility(bNewIsActive, true);
+	bIsActive = bNewIsActive;
+	UpdateCollisionAndVisibility(bIsActive);
+}
+
+void ARLPowerupBase::UpdateCollisionAndVisibility(bool bEnable)
+{
+	SetActorEnableCollision(bEnable);
+	RootComponent->SetVisibility(bEnable, true);
+}
+
+void ARLPowerupBase::OnRep_IsActive()
+{
+	UpdateCollisionAndVisibility(bIsActive);
+}
+
+void ARLPowerupBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ARLPowerupBase, bIsActive);
 }
 
 
