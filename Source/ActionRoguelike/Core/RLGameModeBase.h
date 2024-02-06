@@ -7,9 +7,45 @@
 #include "GameFramework/GameModeBase.h"
 #include "RLGameModeBase.generated.h"
 
+class URLMonsterDataAsset;
 class URLSaveGame;
 class UEnvQueryInstanceBlueprintWrapper;
 class UEnvQuery;
+
+
+// DataTable Row for spawning monsters in game mode
+USTRUCT(BlueprintType)
+struct FMonsterInfoRow : public FTableRowBase 
+{
+	GENERATED_BODY()
+
+public:
+	FMonsterInfoRow()
+		: MonsterData(nullptr)
+	{
+		Weight = 1.0f;
+		SpawnCost = 5.0f;
+		KillReward = 20.0f;
+	}
+
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	// TSubclassOf<AActor> MonsterClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	URLMonsterDataAsset* MonsterData;
+
+	// Relative chance to pick this monster
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Weight;
+
+	// Points required by game mode to spawn this unit
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float SpawnCost;
+
+	// Amount of credits awarded to killer of this unit
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float KillReward;
+};
 
 
 UCLASS()
@@ -86,7 +122,10 @@ protected:
 	UEnvQuery* SpawnBotQuery;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Config | AI")
-	TSubclassOf<AActor> MinionClass;
+	UDataTable* MonsterTable;
+		
+	// UPROPERTY(EditDefaultsOnly, Category = "Config | AI")
+	// TSubclassOf<AActor> MinionClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Config | AI")
 	float SpawnTimerInterval;

@@ -25,7 +25,8 @@ ARLPowerupBase::ARLPowerupBase()
 	bIsActive = true;
 
 	//TODO: SetReplicates called on non-initialized actor. Directly setting bReplicates is the correct procedure for pre-init actors.
-	SetReplicates(true);
+	// SetReplicates(true);
+	bReplicates = true;
 }
 
 void ARLPowerupBase::Interact_Implementation(APawn* InstigatorPawn)

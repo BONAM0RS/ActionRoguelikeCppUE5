@@ -7,6 +7,7 @@
 #include "RLPlayerState.h"
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "ActionRoguelike/AI/RLAICharacter.h"
+#include "ActionRoguelike/Data/RLMonsterDataAsset.h"
 #include "ActionRoguelike/Interfaces/RLGameplayInterface.h"
 #include "ActionRoguelike/SaveGame/RLSaveGame.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
@@ -23,7 +24,8 @@ ARLGameModeBase::ARLGameModeBase()
 	: CurrentSaveGame(nullptr),
 	  PowerupSpawnQuery(nullptr),
 	  DifficultyCurve(nullptr),
-	  SpawnBotQuery(nullptr)
+	  SpawnBotQuery(nullptr),
+	  MonsterTable(nullptr)
 {
 	PlayerStateClass = ARLPlayerState::StaticClass();
 
@@ -365,10 +367,20 @@ void ARLGameModeBase::OnBotSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper
 	TArray<FVector> QueryLocations = QueryInstance->GetResultsAsLocations();
 	if (QueryLocations.Num() > 0)
 	{
-		GetWorld()->SpawnActor<AActor>(MinionClass, QueryLocations[0], FRotator::ZeroRotator);
+		if (MonsterTable != nullptr)
+		{
+			TArray<FMonsterInfoRow*> Rows;
+			MonsterTable->GetAllRows("", Rows);
 
-		// track all the used spawn location
-		DrawDebugSphere(GetWorld(), QueryLocations[0], 50.f, 20, FColor::Blue, false, 60.0f);
+			// Get Random Enemy
+			int32 RandomIndex = FMath::RandRange(0, Rows.Num() - 1);
+			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
+			
+			GetWorld()->SpawnActor<AActor>(SelectedRow->MonsterData->MonsterClass, QueryLocations[0], FRotator::ZeroRotator);
+
+			// track all the used spawn location
+			DrawDebugSphere(GetWorld(), QueryLocations[0], 50.f, 20, FColor::Blue, false, 60.0f);
+		}
 	}
 }
 
