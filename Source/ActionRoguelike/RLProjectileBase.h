@@ -9,6 +9,7 @@
 class UProjectileMovementComponent;
 class USphereComponent;
 class ULegacyCameraShake;
+class USoundCue;
 
 UCLASS(ABSTRACT)
 class ACTIONROGUELIKE_API ARLProjectileBase : public AActor

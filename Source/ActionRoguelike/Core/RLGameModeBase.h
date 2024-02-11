@@ -21,7 +21,6 @@ struct FMonsterInfoRow : public FTableRowBase
 
 public:
 	FMonsterInfoRow()
-		: MonsterData(nullptr)
 	{
 		Weight = 1.0f;
 		SpawnCost = 5.0f;
@@ -31,8 +30,11 @@ public:
 	// UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	// TSubclassOf<AActor> MonsterClass;
 
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	// URLMonsterDataAsset* MonsterData;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	URLMonsterDataAsset* MonsterData;
+	FPrimaryAssetId MonsterId;
 
 	// Relative chance to pick this monster
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -79,6 +81,8 @@ protected:
 
 	UFUNCTION()
 	void OnBotSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	void OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation);
 
 public:
 	//Console command

@@ -2,10 +2,13 @@
 
 #include "RLActionComponent.h"
 
-//#include "ActionRoguelike/ActionRoguelike.h"
+#include "ActionRoguelike/ActionRoguelike.h"
 #include "ActionRoguelike/Actions/RLAction.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
+
+
+DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_ANDREW);
 
 
 URLActionComponent::URLActionComponent()
@@ -26,6 +29,20 @@ void URLActionComponent::BeginPlay()
 			AddAction(ActionClass, GetOwner());
 		}
 	}
+}
+
+void URLActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	TArray<URLAction*> ActionsCopy = Actions;
+	for (URLAction* Action : ActionsCopy)
+	{
+		if (Action && Action->IsRunning())
+		{
+			Action->StopAction(GetOwner());
+		}
+	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void URLActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -84,6 +101,8 @@ void URLActionComponent::RemoveAction(URLAction* ActionToRemove)
 
 bool URLActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 {
+	SCOPE_CYCLE_COUNTER(STAT_StartActionByName);
+	
 	for (URLAction* Action : Actions)
 	{
 		if (Action != nullptr && Action->ActionName == ActionName)
@@ -100,6 +119,9 @@ bool URLActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 			{
 				ServerStartAction(Instigator, ActionName);
 			}
+
+			// Bookmark for Unreal Insights
+			TRACE_BOOKMARK(TEXT("StartAction::%s"), *GetNameSafe(Action));
 			
 			Action->StartAction(Instigator);
 			return true;

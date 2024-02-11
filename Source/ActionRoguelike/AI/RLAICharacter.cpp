@@ -27,7 +27,7 @@ ARLAICharacter::ARLAICharacter()
 	GetMesh()->SetGenerateOverlapEvents(true);
 	
 	// Temp solution
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
 
 	MuzzleShotSocketName = "Muzzle_Front";
 	HitDamageParamName = "Damage";

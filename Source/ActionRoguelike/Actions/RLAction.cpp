@@ -22,7 +22,7 @@ void URLAction::Initialize(URLActionComponent* NewActionComp)
 
 void URLAction::StartAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp,Warning,TEXT("Running: %s"), *GetNameSafe(this));
+	UE_LOG(LogTemp,Log,TEXT("Running: %s"), *GetNameSafe(this));
 	//LogOnScreen(this, FString::Printf(TEXT("Started: %s"), *ActionName.ToString()), FColor::Green);
 	
 	ActionComp->ActiveGameplayTags.AppendTags(GrantsTags);
@@ -40,11 +40,11 @@ void URLAction::StartAction_Implementation(AActor* Instigator)
 
 void URLAction::StopAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp,Warning,TEXT("Stop: %s"), *GetNameSafe(this));
+	UE_LOG(LogTemp,Log,TEXT("Stop: %s"), *GetNameSafe(this));
 	//LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
 
 	// always check to be sure we don't call StopAction when bIsRunning = false, so it's already stopped;
-	//ensureAlways(bIsRunning); // no need to check is on clients
+	//ensureAlways(bIsRunning); // no need to check it on clients
 	
 	ActionComp->ActiveGameplayTags.RemoveTags(GrantsTags);
 

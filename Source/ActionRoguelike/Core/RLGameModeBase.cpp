@@ -5,11 +5,14 @@
 #include "EngineUtils.h"
 #include "RLCharacter.h"
 #include "RLPlayerState.h"
+#include "ActionRoguelike/ActionRoguelike.h"
+#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "ActionRoguelike/AI/RLAICharacter.h"
 #include "ActionRoguelike/Data/RLMonsterDataAsset.h"
 #include "ActionRoguelike/Interfaces/RLGameplayInterface.h"
 #include "ActionRoguelike/SaveGame/RLSaveGame.h"
+#include "Engine/AssetManager.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -44,6 +47,12 @@ void ARLGameModeBase::InitGame(const FString& MapName, const FString& Options, F
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
+	FString SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
+	if (SelectedSaveSlot.Len() > 0)
+	{
+		SlotName = SelectedSaveSlot;
+	}
+	
 	LoadSaveGame();
 }
 
@@ -236,7 +245,7 @@ void ARLGameModeBase::OnPowerupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> R
 		TSubclassOf<AActor> RandomPowerupClass = PowerupClasses[RandomClassIndex];
 
 		GetWorld()->SpawnActor<AActor>(RandomPowerupClass, PickedLocation, FRotator::ZeroRotator);
-		UE_LOG(LogTemp, Warning, TEXT("Spawn Powerup %i"), SpawnCounter);
+		//UE_LOG(LogTemp, Warning, TEXT("Spawn Powerup %i"), SpawnCounter);
 
 		// Keep for distance checks
 		UsedLocations.Add(PickedLocation);
@@ -306,14 +315,18 @@ void ARLGameModeBase::OnPowerupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> R
 
 void ARLGameModeBase::SpawnBotTimerElapsed()
 {
+	//LogOnScreen(this, "SpawnBotTimerElapsed");
+	
 	if (!bSpawnBots)
 	{
+		//LogOnScreen(this, "Bot spawning disabled via GameMode settings", FColor::Orange);
 		UE_LOG(LogTemp,Warning,TEXT("Bot spawning disabled via GameMode settings"));
 		return;
 	}
 	
 	if (!CVarSpawnBots.GetValueOnGameThread())
 	{
+		//LogOnScreen(this, "Bot spawning disabled via 'CVarSpawnBots'", FColor::Orange);
 		UE_LOG(LogTemp,Warning,TEXT("Bot spawning disabled via 'CVarSpawnBots'"));
 		return;
 	}
@@ -342,6 +355,7 @@ void ARLGameModeBase::SpawnBotTimerElapsed()
 	
 	if (NumOfAliveBots >= MaxNumOfAliveBots)
 	{
+		//LogOnScreen(this, "Max Bot capacity. Skipping bot spawn", FColor::Orange);
 		//UE_LOG(LogTemp,Warning, TEXT("At max bot capacity. Skipping bot spawn"));
 		return;
 	}
@@ -353,13 +367,13 @@ void ARLGameModeBase::SpawnBotTimerElapsed()
 	if (ensure(QueryInstance)) {
 		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ARLGameModeBase::OnBotSpawnQueryCompleted);
 	}
-	
 }
 
 void ARLGameModeBase::OnBotSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
 {
 	if (!QueryStatus == EEnvQueryStatus::Success)
 	{
+		LogOnScreen(this, "Spawn bot EQS Failed", FColor::Red);
 		UE_LOG(LogTemp,Warning,TEXT("Spawn bot EQS Failed"));
 		return;
 	}
@@ -375,11 +389,55 @@ void ARLGameModeBase::OnBotSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper
 			// Get Random Enemy
 			int32 RandomIndex = FMath::RandRange(0, Rows.Num() - 1);
 			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
-			
-			GetWorld()->SpawnActor<AActor>(SelectedRow->MonsterData->MonsterClass, QueryLocations[0], FRotator::ZeroRotator);
+
+			UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
+			if (AssetManager)
+			{
+				LogOnScreen(this, "Loading monster ...", FColor::Green);
+				
+				TArray<FName> Bundles;
+
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ARLGameModeBase::OnMonsterLoaded,
+					SelectedRow->MonsterId, QueryLocations[0]);
+				
+				AssetManager->LoadPrimaryAsset(SelectedRow->MonsterId, Bundles, Delegate);
+			}
+		}
+	}
+	else
+	{
+		LogOnScreen(this, "QueryLocations < 0", FColor::Red);
+	}
+}
+
+void ARLGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation)
+{
+	LogOnScreen(this, "Finished loading.", FColor::Green);
+	
+	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
+	if (AssetManager)
+	{
+		URLMonsterDataAsset* MonsterDataAsset = Cast<URLMonsterDataAsset>(AssetManager->GetPrimaryAssetObject(LoadedId));
+		if (MonsterDataAsset)
+		{
+			AActor* NewBot = GetWorld()->SpawnActor<AActor>(MonsterDataAsset->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
+			if (NewBot != nullptr)
+			{
+				LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(MonsterDataAsset)));
+	
+				// Grant special actions, buffs, etc.
+				URLActionComponent* ActionComp = Cast<URLActionComponent>(NewBot->GetComponentByClass(URLActionComponent::StaticClass()));
+				if (ActionComp != nullptr)
+				{
+					for (TSubclassOf<URLAction> ActionClass : MonsterDataAsset->Actions)
+					{
+						ActionComp->AddAction(ActionClass, NewBot);
+					}
+				}
+			}
 
 			// track all the used spawn location
-			DrawDebugSphere(GetWorld(), QueryLocations[0], 50.f, 20, FColor::Blue, false, 60.0f);
+			//DrawDebugSphere(GetWorld(), QueryLocations[0], 50.f, 20, FColor::Blue, false, 60.0f);
 		}
 	}
 }
