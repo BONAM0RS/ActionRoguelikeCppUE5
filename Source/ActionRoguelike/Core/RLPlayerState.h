@@ -8,6 +8,8 @@
 
 class URLSaveGame;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRecordTimeChanged, ARLPlayerState*, PlayerState, float, NewTime, float, OldRecord);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, ARLPlayerState*, PlayerState, int32, NewCredits,
                                                int32, Delta);
 
@@ -17,6 +19,9 @@ class ACTIONROGUELIKE_API ARLPlayerState : public APlayerState
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnRecordTimeChanged OnRecordTimeChanged;
+	
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnCreditsChanged OnCreditsChanged;
 
@@ -28,6 +33,10 @@ public:
 	void LoadPlayerState(URLSaveGame* SaveGameObject);
 
 public:
+	/* Checks current record and only sets if better time was passed in. */
+	UFUNCTION(BlueprintCallable)
+	bool UpdatePersonalRecord(float NewTime);
+	
 	UFUNCTION(BlueprintCallable, Category = "Credits")
 	void AddCredits(int32 Delta);
 
@@ -38,6 +47,9 @@ public:
 	int32 GetCredits() const;
 
 protected:
+	UPROPERTY(BlueprintReadOnly)
+	float PersonalRecordTime;
+	
 	UPROPERTY(EditDefaultsOnly, ReplicatedUsing="OnRep_Credits", Category = "Config")
 	int32 Credits;
 

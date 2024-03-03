@@ -61,10 +61,10 @@ protected:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "SaveGame")
-	void WriteSaveGame();
-
-	void LoadSaveGame();
+	// UFUNCTION(BlueprintCallable, Category = "SaveGame")
+	// void WriteSaveGame();
+	//
+	// void LoadSaveGame();
 
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 
@@ -96,10 +96,10 @@ protected:
 	void RespawnPlayerElapsed(AController* Controller);
 
 protected:
-	FString SlotName;
+	//FString SlotName;
 	
-	UPROPERTY()
-	URLSaveGame* CurrentSaveGame;
+	// UPROPERTY()
+	// URLSaveGame* CurrentSaveGame;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Config | Powerups")
 	UEnvQuery* PowerupSpawnQuery;
