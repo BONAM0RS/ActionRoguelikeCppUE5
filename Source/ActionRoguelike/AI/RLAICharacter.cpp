@@ -8,8 +8,8 @@
 
 #include "AIController.h"
 #include "BrainComponent.h"
-#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
-#include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
+#include "ActionRoguelike/Components/RLActionComponent.h"
+#include "ActionRoguelike/Components/RLAttributeComponent.h"
 #include "ActionRoguelike/UI/RLWorldUserWidget.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"

@@ -4,11 +4,11 @@
  * Licensed for use only with UE based products.
  */
 
-
 #include "RLBTTaskNode_HealSelf.h"
 
 #include "AIController.h"
-#include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
+#include "ActionRoguelike/Components/RLAttributeComponent.h"
+
 
 EBTNodeResult::Type URLBTTaskNode_HealSelf::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {

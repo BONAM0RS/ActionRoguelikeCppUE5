@@ -6,7 +6,7 @@
 
 #include "RLGameplayFunctionLibrary.h"
 
-#include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
+#include "ActionRoguelike/Components/RLAttributeComponent.h"
 
 
 bool URLGameplayFunctionLibrary::ApplyDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount)

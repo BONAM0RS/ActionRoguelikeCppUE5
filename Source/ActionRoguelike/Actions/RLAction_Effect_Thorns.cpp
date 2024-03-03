@@ -6,8 +6,8 @@
 
 #include "RLAction_Effect_Thorns.h"
 
-#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
-#include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
+#include "ActionRoguelike/Components/RLActionComponent.h"
+#include "ActionRoguelike/Components/RLAttributeComponent.h"
 #include "ActionRoguelike/Utility/RLGameplayFunctionLibrary.h"
 
 

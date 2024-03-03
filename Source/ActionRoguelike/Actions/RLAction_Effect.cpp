@@ -6,7 +6,7 @@
 
 #include "RLAction_Effect.h"
 
-#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
+#include "ActionRoguelike/Components/RLActionComponent.h"
 #include "GameFramework/GameStateBase.h"
 
 URLAction_Effect::URLAction_Effect()

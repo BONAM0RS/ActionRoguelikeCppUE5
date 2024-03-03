@@ -7,7 +7,7 @@
 #include "RLAnimInstance.h"
 
 #include "GameplayTagContainer.h"
-#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
+#include "ActionRoguelike/Components/RLActionComponent.h"
 
 
 void URLAnimInstance::NativeInitializeAnimation()

@@ -7,7 +7,7 @@
 #include "RLBTService_CheckHealth.h"
 
 #include "AIController.h"
-#include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
+#include "ActionRoguelike/Components/RLAttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 

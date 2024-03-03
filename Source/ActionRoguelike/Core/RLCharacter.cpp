@@ -6,9 +6,9 @@
 
 #include "RLCharacter.h"
 
-#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
-#include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
-#include "ActionRoguelike/ActorComponents/RLInteractionComponent.h"
+#include "ActionRoguelike/Components/RLActionComponent.h"
+#include "ActionRoguelike/Components/RLAttributeComponent.h"
+#include "ActionRoguelike/Components/RLInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"

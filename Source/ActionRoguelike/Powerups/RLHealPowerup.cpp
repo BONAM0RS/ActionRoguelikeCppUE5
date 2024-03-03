@@ -6,7 +6,7 @@
 
 #include "RLHealPowerup.h"
 
-#include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
+#include "ActionRoguelike/Components/RLAttributeComponent.h"
 #include "ActionRoguelike/Core/RLPlayerState.h"
 
 

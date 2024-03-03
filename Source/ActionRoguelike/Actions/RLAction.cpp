@@ -7,7 +7,7 @@
 #include "RLAction.h"
 
 //#include "ActionRoguelike/ActionRoguelike.h"
-#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
+#include "ActionRoguelike/Components/RLActionComponent.h"
 #include "Net/UnrealNetwork.h"
 
 

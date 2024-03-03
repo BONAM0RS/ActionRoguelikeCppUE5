@@ -4,14 +4,14 @@
  * Licensed for use only with UE based products.
  */
 
-
 #include "RLMageProjectile.h"
 
-#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "ActionRoguelike/Utility/RLGameplayFunctionLibrary.h"
 #include "ActionRoguelike/Actions/RLAction_Effect.h"
+#include "ActionRoguelike/Components/RLActionComponent.h"
+
 
 ARLMageProjectile::ARLMageProjectile()
 {
