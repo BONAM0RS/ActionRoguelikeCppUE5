@@ -3,13 +3,11 @@
 
 #include "RLMageProjectile.h"
 
-#include "ActorComponents/RLActionComponent.h"
-//#include "ActorComponents/RLAttributeComponent.h"
+#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "Utility/RLGameplayFunctionLibrary.h"
-#include "Actions/RLAction_Effect.h"
-
+#include "ActionRoguelike/Utility/RLGameplayFunctionLibrary.h"
+#include "ActionRoguelike/Actions/RLAction_Effect.h"
 
 ARLMageProjectile::ARLMageProjectile()
 {

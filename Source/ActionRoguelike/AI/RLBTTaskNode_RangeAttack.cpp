@@ -4,8 +4,8 @@
 
 #include "AIController.h"
 #include "RLAICharacter.h"
-#include "ActionRoguelike/RLMageProjectile.h"
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
+#include "ActionRoguelike/Projectiles/RLMageProjectile.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 

@@ -3,8 +3,8 @@
 
 #include "RLActionPowerup.h"
 
-#include "Actions/RLAction.h"
-#include "ActorComponents/RLActionComponent.h"
+#include "ActionRoguelike/Actions/RLAction.h"
+#include "ActionRoguelike/ActorComponents/RLActionComponent.h"
 
 
 ARLActionPowerup::ARLActionPowerup()

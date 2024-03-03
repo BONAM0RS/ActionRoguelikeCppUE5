@@ -2,7 +2,7 @@
 
 #include "RLDummyTarget.h"
 
-#include "ActorComponents/RLAttributeComponent.h"
+#include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 
 
 ARLDummyTarget::ARLDummyTarget()

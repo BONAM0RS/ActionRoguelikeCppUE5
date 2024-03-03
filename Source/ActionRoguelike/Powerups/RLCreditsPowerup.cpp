@@ -2,7 +2,7 @@
 
 #include "RLCreditsPowerup.h"
 
-#include "Core/RLPlayerState.h"
+#include "ActionRoguelike/Core/RLPlayerState.h"
 
 
 ARLCreditsPowerup::ARLCreditsPowerup()

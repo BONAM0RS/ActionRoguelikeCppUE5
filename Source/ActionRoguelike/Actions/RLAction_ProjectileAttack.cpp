@@ -3,8 +3,8 @@
 
 #include "RLAction_ProjectileAttack.h"
 
-#include "ActionRoguelike/RLMageProjectile.h"
 #include "ActionRoguelike/Core/RLCharacter.h"
+#include "ActionRoguelike/Projectiles/RLMageProjectile.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 

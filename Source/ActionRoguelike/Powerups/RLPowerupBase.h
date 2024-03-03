@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActionRoguelike/Interfaces/RLGameplayInterface.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/RLGameplayInterface.h"
 #include "RLPowerupBase.generated.h"
 
 class USphereComponent;

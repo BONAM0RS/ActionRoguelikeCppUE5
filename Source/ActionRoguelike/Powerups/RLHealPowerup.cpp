@@ -2,8 +2,8 @@
 
 #include "RLHealPowerup.h"
 
-#include "ActorComponents/RLAttributeComponent.h"
-#include "Core/RLPlayerState.h"
+#include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
+#include "ActionRoguelike/Core/RLPlayerState.h"
 
 
 #define LOCTEXT_NAMESPACE "InteractableActors"
