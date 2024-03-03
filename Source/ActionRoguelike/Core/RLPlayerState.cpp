@@ -56,9 +56,7 @@ bool ARLPlayerState::UpdatePersonalRecord(float NewTime)
 	if (NewTime > PersonalRecordTime)
 	{
 		float OldRecord = PersonalRecordTime;
-
 		PersonalRecordTime = NewTime;
-
 		OnRecordTimeChanged.Broadcast(this, PersonalRecordTime, OldRecord);
 
 		return true;

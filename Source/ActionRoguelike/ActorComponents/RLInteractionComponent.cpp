@@ -35,7 +35,7 @@ void URLInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	APawn* PawnOwner = Cast<APawn>(GetOwner());
 	if (PawnOwner->IsLocallyControlled())
 	{
-		// replace with timer instead call it on tick
+		// Better replace with timer instead call it on tick
 		FindBestInteractable();
 	}
 }
@@ -62,7 +62,7 @@ void URLInteractionComponent::FindBestInteractable()
 	bool bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
 	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
 
-	// clear ref before trying to fill
+	// Clear ref before trying to fill
 	FocusedActor = nullptr;
 	
 	for (FHitResult HitResult: HitResults)

@@ -18,8 +18,7 @@ URLAction_Effect_Thorns::URLAction_Effect_Thorns()
 void URLAction_Effect_Thorns::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);
-
-	// Start listening
+	
 	URLAttributeComponent* Attributes = URLAttributeComponent::GetAttributes(GetOwningComponent()->GetOwner());
 	if (Attributes)
 	{
@@ -56,7 +55,7 @@ void URLAction_Effect_Thorns::OnHealthChanged(AActor* InstigatorActor, URLAttrib
 		// Flip to positive, so we don't end up healing ourselves when passed into damage
 		ReflectedAmount = FMath::Abs(ReflectedAmount);
 
-		// Return damage sender...
+		// Return damage to sender
 		URLGameplayFunctionLibrary::ApplyDamage(OwningActor, InstigatorActor, ReflectedAmount);
 	}
 }

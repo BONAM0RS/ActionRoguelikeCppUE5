@@ -19,8 +19,8 @@ void ARLActionPowerup::Interact_Implementation(APawn* InstigatorPawn)
 		return;
 	}
 
-	URLActionComponent* ActionComp = Cast<URLActionComponent>(InstigatorPawn->GetComponentByClass(URLActionComponent::StaticClass()));
 	// Check if Player already has action class
+	URLActionComponent* ActionComp = Cast<URLActionComponent>(InstigatorPawn->GetComponentByClass(URLActionComponent::StaticClass()));
 	if (ActionComp)
 	{
 		if (ActionComp->GetAction(ActionToGrant) != nullptr)

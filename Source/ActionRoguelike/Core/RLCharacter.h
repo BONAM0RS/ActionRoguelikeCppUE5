@@ -13,7 +13,8 @@ class URLInteractionComponent;
 class UCameraComponent;
 class USpringArmComponent;
 
-// better have child classes from this base class: RLPlayerCharacter and RLAICharacter
+
+// TODO: Better to have child classes from this base class: RLPlayerCharacter and RLAICharacter
 UCLASS()
 class ACTIONROGUELIKE_API ARLCharacter : public ACharacter
 {
@@ -49,7 +50,7 @@ protected:
 	void HideHitDamageEffect();
 
 public:
-	// console command, 'Exec' spicifier can be used in player controller / character / game mode / cheat manager
+	// Console command, 'Exec' spicifier can be used in player controller / character / game mode / cheat manager
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.f);
 

@@ -42,12 +42,8 @@ void URLAction::StopAction_Implementation(AActor* Instigator)
 {
 	UE_LOG(LogTemp,Log,TEXT("Stop: %s"), *GetNameSafe(this));
 	//LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
-
-	// always check to be sure we don't call StopAction when bIsRunning = false, so it's already stopped;
-	//ensureAlways(bIsRunning); // no need to check it on clients
 	
 	ActionComp->ActiveGameplayTags.RemoveTags(GrantsTags);
-
 	RepData.bIsRunning = false;
 
 	GetOwningComponent()->OnActionStopped.Broadcast(GetOwningComponent(), this);
@@ -71,7 +67,6 @@ bool URLAction::IsRunning() const
 	return RepData.bIsRunning;
 }
 
-// Because it's UObject we should override this to have access to spawn actors, line traces etc functionality in blueprints
 UWorld* URLAction::GetWorld() const
 {
 	AActor* Actor = Cast<AActor>(GetOuter());

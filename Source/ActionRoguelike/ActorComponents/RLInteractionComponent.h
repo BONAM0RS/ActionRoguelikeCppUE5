@@ -28,9 +28,10 @@ public:
 	void PrimaryInteract();
 
 protected:
-	
-	// Reliable - Will always arrive, eventually. Request will be re-sent unless it was received
-	// Unreliable - Not guaranteed, packet can get lost and won't retry
+	/*
+	Reliable - Will always arrive, eventually. Request will be re-sent unless it was received
+	Unreliable - Not guaranteed, packet can get lost and won't retry
+	*/
 
 	// Client -> Server
 	UFUNCTION(Server, Reliable)

@@ -33,7 +33,7 @@ public:
 	void LoadPlayerState(URLSaveGame* SaveGameObject);
 
 public:
-	/* Checks current record and only sets if better time was passed in. */
+	// Checks current record and only sets if better time was passed in
 	UFUNCTION(BlueprintCallable)
 	bool UpdatePersonalRecord(float NewTime);
 	
@@ -53,12 +53,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, ReplicatedUsing="OnRep_Credits", Category = "Config")
 	int32 Credits;
 
-	// OnRep_ can use a parameter containing the 'old value' of the variable it is bound to . Very useful in this case to figure out the 'delta'
+	// OnRep_ can use a parameter containing the 'old value' of the variable it is bound to. Very useful in this case to figure out the 'delta'
 	UFUNCTION()
 	void OnRep_Credits(int32 OldCredits);
 
-	// Downside of using multicast here is that we send over more data the net, since it's a RPC with two params.
-	// OnRep_ is "free" since Credits is already getting replicated anyway
+	/* Downside of using multicast here is that we send over more data the net, since it's a RPC with two params.
+		OnRep_ is "free" since Credits is already getting replicated anyway */
 	//UFUNCTION(NetMulticast, Unreliable);
 	//void MulticastCredits(float NewCredits, float Delta);
 };

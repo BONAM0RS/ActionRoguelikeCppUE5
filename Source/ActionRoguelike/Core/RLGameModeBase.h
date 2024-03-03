@@ -27,12 +27,6 @@ public:
 		KillReward = 20.0f;
 	}
 
-	// UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	// TSubclassOf<AActor> MonsterClass;
-
-	// UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	// URLMonsterDataAsset* MonsterData;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FPrimaryAssetId MonsterId;
 
@@ -61,18 +55,10 @@ protected:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 public:
-	// UFUNCTION(BlueprintCallable, Category = "SaveGame")
-	// void WriteSaveGame();
-	//
-	// void LoadSaveGame();
-
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 
 protected:
 	virtual void StartPlay() override;
-
-	// UFUNCTION()
-	// void OnPowerupSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
 	void OnPowerupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 
@@ -85,7 +71,7 @@ protected:
 	void OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation);
 
 public:
-	//Console command
+	// Console command
 	UFUNCTION(Exec)
 	void KillAll();
 
@@ -96,11 +82,6 @@ protected:
 	void RespawnPlayerElapsed(AController* Controller);
 
 protected:
-	//FString SlotName;
-	
-	// UPROPERTY()
-	// URLSaveGame* CurrentSaveGame;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "Config | Powerups")
 	UEnvQuery* PowerupSpawnQuery;
 
@@ -127,9 +108,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Config | AI")
 	UDataTable* MonsterTable;
-		
-	// UPROPERTY(EditDefaultsOnly, Category = "Config | AI")
-	// TSubclassOf<AActor> MinionClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Config | AI")
 	float SpawnTimerInterval;
@@ -138,6 +116,5 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Config | Credits")
 	int32 CreditsPerKill;
-
-
+	
 };

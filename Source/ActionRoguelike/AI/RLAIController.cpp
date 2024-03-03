@@ -2,9 +2,6 @@
 
 #include "RLAIController.h"
 
-//#include "BehaviorTree/BlackboardComponent.h"
-//#include "Kismet/GameplayStatics.h"
-
 
 void ARLAIController::BeginPlay()
 {
@@ -14,13 +11,4 @@ void ARLAIController::BeginPlay()
 	{
 		RunBehaviorTree(BehaviorTree);
 	}
-
-	// This feature now controls pawn sensing component
-	// APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
-	// if (PlayerPawn != nullptr)
-	// {
-	// 	GetBlackboardComponent()->SetValueAsVector("MoveToLocation", PlayerPawn->GetActorLocation());
-	//
-	// 	GetBlackboardComponent()->SetValueAsObject("TargetActor", PlayerPawn);
-	// }
 }

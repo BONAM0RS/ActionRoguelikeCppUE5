@@ -71,11 +71,11 @@ protected:
 	UPROPERTY()
 	URLWorldUserWidget* ActiveHealthBarWidget;
 
-	/* Key for AI Blackboard 'TargetActor' */
+	// Key for AI Blackboard 'TargetActor'
 	UPROPERTY(VisibleAnywhere, Category = "Config | Names")
 	FName TargetActorKey;
 
-	/* Widget to display when bot first sees a player. */
+	// Widget to display when bot first sees a player
 	UPROPERTY(EditDefaultsOnly, Category = "Config | UI")
 	TSubclassOf<UUserWidget> SpottedWidgetClass;
 };

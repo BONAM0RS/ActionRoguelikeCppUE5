@@ -28,8 +28,8 @@ public:
 protected:
 	virtual void SetPawn(APawn* InPawn) override;
 	
-	// Called when player controller is ready to begin playing, good moment to initialize things like Ui which might be too early in BeginPlay
-	// (especially in multiplayer clients where not all data such as PlayerState may have been received yet)
+	/* Called when player controller is ready to begin playing, good moment to initialize things like Ui which might be too early in BeginPlay
+		(especially in multiplayer clients where not all data such as PlayerState may have been received yet) */
 	virtual void BeginPlayingState() override;
 
 	// OPTIONS TO DEAL WITH PLAYER STATE IS NOT READY FOR UI IN MULTIPLAYER

@@ -7,7 +7,8 @@
 #include "RLSaveGameSettings.generated.h"
 
 
-UCLASS(Config=Game, defaultconfig, meta = (DisplayName="Save Game Settings")) // 'DefaultConfig' = "Save object config only to Default INIs, never to local INIs."
+// 'DefaultConfig' = "Save object config only to Default INIs, never to local INIs."
+UCLASS(Config=Game, defaultconfig, meta = (DisplayName="Save Game Settings")) 
 class ACTIONROGUELIKE_API URLSaveGameSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()

@@ -29,9 +29,8 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Effect")
 	float Duration;
-
+	
 	// Time between 'ticks' to apply effect
-	// TODO: add this description on hover property in details (same for other properties in all classes)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config | Effect")
 	float Period;
 

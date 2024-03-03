@@ -8,7 +8,7 @@
 
 class ARLProjectileBase;
 
-// should be abstract
+
 UCLASS()
 class ACTIONROGUELIKE_API URLAction_ProjectileAttack : public URLAction
 {
@@ -17,7 +17,6 @@ class ACTIONROGUELIKE_API URLAction_ProjectileAttack : public URLAction
 public:
 	URLAction_ProjectileAttack();
 	
-	//void StartAction(AActor* Instigator);
 	virtual void StartAction_Implementation(AActor* Instigator) override;
 
 protected:

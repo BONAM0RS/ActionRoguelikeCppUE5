@@ -15,6 +15,7 @@
 
 //#include UE_INLINE_GENERATED_CPP_BY_NAME(RLSaveGameSubsystem)
 
+
 void URLSaveGameSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);

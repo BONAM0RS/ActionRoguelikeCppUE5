@@ -7,8 +7,6 @@
 #include "RLAttributeComponent.generated.h"
 
 
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, URLAttributeComponent*, OwningComponent, float, NewHealth, float, Delta);
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAttributeChanged, AActor*, InstigatorActor, URLAttributeComponent*, OwningComponent, float, NewValue, float, Delta);
 
 
@@ -34,18 +32,19 @@ public:
 	bool ApplyRageChange(AActor* InstigatorActor, float Delta);
 
 protected:
-	// Multicast better use for transient events, things that happened in the moment, but don't change state (like barrel explosion)
-	// RepNotify are useful for state changes (for example isAlive state)
-	// For example if player connected after some state changes with Multicast he will not recognize that changes
+	/* Multicast better use for transient events, things that happened in the moment, but don't change state (like barrel explosion)
+		RepNotify are useful for state changes (for example isAlive state)
+		For example if player connected after some state changes with Multicast he will not recognize that changes */
 
-	//Reliable also ignore relevancy, so with reliable option all clients will get update (it is ok for chat msg),
-	//but we maybe don't want it for players far away, in this case better use Unreliable
+	/* Reliable also ignore relevancy, so with reliable option all clients will get update (it is ok for chat msg),
+		but we maybe don't want it for players far away, in this case better use Unreliable */
 	
-	//It can be Unreliable because MaxHealth and CurrentHealth are replicated, so its for cosmetic updates
+	// It can be Unreliable because MaxHealth and CurrentHealth are replicated, so its for cosmetic updates
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);
 
-	UFUNCTION(NetMulticast, Unreliable) // Used for cosmetic changes only
+	// Used for cosmetic changes only
+	UFUNCTION(NetMulticast, Unreliable) 
 	void MulticastRageChanged(AActor* InstigatorActor, float NewRage, float Delta);
 
 public:
@@ -89,12 +88,14 @@ protected:
 	float CurrentRage;
 	
 	// Stamina, Strength etc...
-	
-	// EditAnywhere - edit in BP editor and per-instance in level
-	// VisibleAnywhere - read-only in editor and level (use for components)
-	// EditDefaultsOnly - hide variable per-instance, edit in BP editor only
-	// VisibleDefaultOnly - read-only access for variable, only in BP editor (uncommon)
-	// EditInstanceOnly - allow only editing of instance (eg. when placed in level)
-	// BlueprintReadOnly - read-only in BP scripting (does not effect details panel)
-	// BlueprintReadWrite - read-write access in BP
+
+	/*
+	EditAnywhere - edit in BP editor and per-instance in level
+	VisibleAnywhere - read-only in editor and level (use for components)
+	EditDefaultsOnly - hide variable per-instance, edit in BP editor only
+	VisibleDefaultOnly - read-only access for variable, only in BP editor (uncommon)
+	EditInstanceOnly - allow only editing of instance (eg. when placed in level)
+	BlueprintReadOnly - read-only in BP scripting (does not effect details panel)
+	BlueprintReadWrite - read-write access in BP
+	*/
 };

@@ -28,12 +28,12 @@ bool URLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 {
 	if (Delta < 0.0f)
 	{
-		// just to not damage if god mode is enabled using cheats
+		// Just to not damage if god mode is enabled using cheats
 		if (!GetOwner()->CanBeDamaged()) {
 			return false;
 		}
 
-		// apply damage multiplier for test purposes
+		// Apply damage multiplier for test purposes
 		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
 		Delta *= DamageMultiplier;
 	}
@@ -148,8 +148,6 @@ void URLAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(URLAttributeComponent, MaxRage);
 	DOREPLIFETIME(URLAttributeComponent, CurrentRage);
 	
-	/** Secondary condition to check before considering the replication of a lifetime property. */
-	//DOREPLIFETIME_CONDITION(URLAttributeComponent, MaxHealth, COND_OwnerOnly);
 }
 
 

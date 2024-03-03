@@ -10,14 +10,12 @@
 #include "ActionRoguelike/ActorComponents/RLAttributeComponent.h"
 #include "ActionRoguelike/AI/RLAICharacter.h"
 #include "ActionRoguelike/Data/RLMonsterDataAsset.h"
-#include "ActionRoguelike/Interfaces/RLGameplayInterface.h"
-#include "ActionRoguelike/SaveGame/RLSaveGame.h"
 #include "ActionRoguelike/SaveGame/RLSaveGameSubsystem.h"
 #include "Engine/AssetManager.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
-#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
+
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(RLGameModeBase)
 
@@ -27,8 +25,7 @@ static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true,
 
 
 ARLGameModeBase::ARLGameModeBase()
-	: //CurrentSaveGame(nullptr),
-	  PowerupSpawnQuery(nullptr),
+	: PowerupSpawnQuery(nullptr),
 	  DifficultyCurve(nullptr),
 	  SpawnBotQuery(nullptr),
 	  MonsterTable(nullptr)
@@ -42,133 +39,23 @@ ARLGameModeBase::ARLGameModeBase()
 	SpawnTimerInterval = 2.0f;
 
 	CreditsPerKill = 20;
-
-	//SlotName = "SaveGame_01";
 }
 
 void ARLGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	// (Save/Load logic moved into new SaveGameSubsystem)
+	// Save/Load logic moved into new SaveGameSubsystem
 	URLSaveGameSubsystem* SaveGameSubsystem = GetGameInstance()->GetSubsystem<URLSaveGameSubsystem>();
 
-	// Optional slot name (Falls back to slot specified in SaveGameSettings class/INI otherwise)
+	// Optional slot name (falls back to slot specified in SaveGameSettings class/INI otherwise)
 	FString SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
 	SaveGameSubsystem->LoadSaveGame(SelectedSaveSlot);
 }
 
-// void ARLGameModeBase::WriteSaveGame()
-// {
-// 	// Iterate all player states, we don't have proper ID to match yet (requires Steam or EOS)
-// 	for (int32 i = 0; i < GameState->PlayerArray.Num(); i ++)
-// 	{
-// 		ARLPlayerState* PlayerState = Cast<ARLPlayerState>(GameState->PlayerArray[i]);
-// 		if (PlayerState != nullptr)
-// 		{
-// 			PlayerState->SavePlayerState(CurrentSaveGame);
-// 			break; // single player only at this point
-// 		}
-// 	}
-//
-// 	CurrentSaveGame->SavedActors.Empty();
-//
-// 	// Iterate the entire world of actors
-// 	for (FActorIterator It(GetWorld()); It ; ++It)
-// 	{
-// 		AActor* Actor = *It;
-// 		//Only interested in our 'gameplay actors'
-// 		if (!Actor->Implements<URLGameplayInterface>())
-// 		{
-// 			continue;
-// 		}
-//
-// 		FActorSaveData ActorData;
-// 		ActorData.ActorName = Actor->GetName();
-// 		ActorData.Transform = Actor->GetActorTransform();
-//
-// 		// Pass the array to fill with data from Actor
-// 		FMemoryWriter MemWriter(ActorData.ByteData);
-// 		
-// 		FObjectAndNameAsStringProxyArchive Archive(MemWriter, true);
-//
-// 		//Find only variables with UPROPERTY(SaveGame)
-// 		Archive.ArIsSaveGame = true;
-//
-// 		// Converts Actor's SaveGame UPROPERTY variables into binary array
-// 		Actor->Serialize(Archive);
-//
-// 		CurrentSaveGame->SavedActors.Add(ActorData);
-// 	}
-// 	
-// 	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
-// }
-
-// void ARLGameModeBase::LoadSaveGame()
-// {
-// 	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0))
-// 	{
-// 		CurrentSaveGame = Cast<URLSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
-// 		if (CurrentSaveGame == nullptr)
-// 		{
-// 			UE_LOG(LogTemp,Warning,TEXT("Failed to load SaveGame Data"));
-// 			return;
-// 		}
-//
-// 		UE_LOG(LogTemp,Log,TEXT("Loaded SaveGame Data"));
-//
-// 		// Iterate the entire world of actors
-// 		for (FActorIterator It(GetWorld()); It ; ++It)
-// 		{
-// 			AActor* Actor = *It;
-// 			//Only interested in our 'gameplay actors'
-// 			if (!Actor->Implements<URLGameplayInterface>())
-// 			{
-// 				continue;
-// 			}
-//
-// 			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
-// 			{
-// 				if (ActorData.ActorName == Actor->GetName())
-// 				{
-// 					Actor->SetActorTransform(ActorData.Transform);
-//
-// 					//
-// 					FMemoryReader MemReader(ActorData.ByteData);
-// 					FObjectAndNameAsStringProxyArchive Archive(MemReader, true);
-//
-// 					//Find only variables with UPROPERTY(SaveGame)
-// 					Archive.ArIsSaveGame = true;
-//
-// 					// Converts binary array back into Actor's SaveGame UPROPERTY variables
-// 					Actor->Serialize(Archive);
-//
-// 					IRLGameplayInterface::Execute_OnActorLoaded(Actor);
-// 					
-// 					break;
-// 				}
-// 			}
-// 		}
-// 	}
-// 	else
-// 	{
-// 		CurrentSaveGame = Cast<URLSaveGame>(UGameplayStatics::CreateSaveGameObject(URLSaveGame::StaticClass()));
-// 		UE_LOG(LogTemp,Log,TEXT("Created New SaveGame Data"));
-// 	}
-// }
-
 void ARLGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	// // Calling Before Super::, so we set variables before 'BeginPlayingState' is called in PlayerController (which is where we init UI in player controller)
-	// ARLPlayerState* PlayerState = NewPlayer->GetPlayerState<ARLPlayerState>();
-	// if (PlayerState != nullptr)
-	// {
-	// 	PlayerState->LoadPlayerState(CurrentSaveGame);
-	// }
-	//
-	// Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-
-	// Calling Before Super:: so we set variables before 'beginplayingstate' is called in PlayerController (which is where we instantiate UI)
+	// Calling Before Super so we set variables before 'BeginPlayingState' is called in PlayerController (which is where we instantiate UI)
 	URLSaveGameSubsystem* SaveGameSubsystem = GetGameInstance()->GetSubsystem<URLSaveGameSubsystem>();
 	SaveGameSubsystem->HandleStartingNewPlayer(NewPlayer);
 
@@ -190,7 +77,7 @@ void ARLGameModeBase::StartPlay()
 		Request.Execute(EEnvQueryRunMode::AllMatching, this, &ARLGameModeBase::OnPowerupSpawnQueryCompleted);
 	}
 
-	// start bot spawning
+	// Start bot spawning
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ARLGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
 }
 
@@ -230,9 +117,9 @@ void ARLGameModeBase::OnPowerupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> R
 			if (DistanceTo < RequiredPowerupDistance)
 			{
 				// Show skipped locations due to distance
-				//DrawDebugSphere(GetWorld(), PickedLocation, 50.0f, 20, FColor::Red, false, 10.0f);
+				// DrawDebugSphere(GetWorld(), PickedLocation, 50.0f, 20, FColor::Red, false, 10.0f);
 
-				// too close, skip to next attempt
+				// Too close, skip to next attempt
 				bValidLocation = false;
 				break;
 			}
@@ -257,66 +144,6 @@ void ARLGameModeBase::OnPowerupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> R
 	}
 }
 
-// void ARLGameModeBase::OnPowerupSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
-// {
-// 	if (QueryStatus != EEnvQueryStatus::Success)
-// 	{
-// 		UE_LOG(LogTemp, Warning, TEXT("Powerup EQS Query Failed!"));
-// 		return;
-// 	}
-//
-// 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
-//
-// 	// Keep used locations to easily check distance between points
-// 	TArray<FVector> UsedLocations;
-//
-// 	int32 SpawnCounter = 0;
-// 	// Break out if we reached the desired count or if we have no more potential positions remaining
-// 	while (SpawnCounter < DesiredPowerupCount && Locations.Num() > 0)
-// 	{
-// 		// Pick a random location from remaining points.
-// 		int32 RandomLocationIndex = FMath::RandRange(0, Locations.Num() - 1);
-//
-// 		FVector PickedLocation = Locations[RandomLocationIndex];
-// 		// Remove to avoid picking again
-// 		Locations.RemoveAt(RandomLocationIndex);
-//
-// 		// Check minimum distance requirement
-// 		bool bValidLocation = true;
-// 		for (FVector OtherLocation : UsedLocations)
-// 		{
-// 			float DistanceTo = (PickedLocation - OtherLocation).Size();
-//
-// 			if (DistanceTo < RequiredPowerupDistance)
-// 			{
-// 				// Show skipped locations due to distance
-// 				DrawDebugSphere(GetWorld(), PickedLocation, 50.0f, 20, FColor::Red, false, 10.0f);
-//
-// 				// too close, skip to next attempt
-// 				bValidLocation = false;
-// 				break;
-// 			}
-// 		}
-//
-// 		// Failed the distance test
-// 		if (!bValidLocation)
-// 		{
-// 			continue;
-// 		}
-//
-// 		// Pick a random powerup-class
-// 		int32 RandomClassIndex = FMath::RandRange(0, PowerupClasses.Num() - 1);
-// 		TSubclassOf<AActor> RandomPowerupClass = PowerupClasses[RandomClassIndex];
-//
-// 		GetWorld()->SpawnActor<AActor>(RandomPowerupClass, PickedLocation, FRotator::ZeroRotator);
-// 		UE_LOG(LogTemp, Warning, TEXT("Spawn Powerup %i"), SpawnCounter);
-//
-// 		// Keep for distance checks
-// 		UsedLocations.Add(PickedLocation);
-// 		SpawnCounter++;
-// 	}
-// }
-
 void ARLGameModeBase::SpawnBotTimerElapsed()
 {
 	//LogOnScreen(this, "SpawnBotTimerElapsed");
@@ -335,15 +162,14 @@ void ARLGameModeBase::SpawnBotTimerElapsed()
 		return;
 	}
 	
-	// I guess this entire check need own function
-	
+	// TODO: I guess this entire check need own function
 	int32 NumOfAliveBots = 0;
-	//similar to GetAllActorsOfClass node in C++
+	// similar to GetAllActorsOfClass node in C++
 	for (TActorIterator<ARLAICharacter> It(GetWorld()); It; ++It)
 	{
 		ARLAICharacter* Bot = *It;
 
-		// if (Bot->IsAlive())
+		// If (Bot->IsAlive())
 		URLAttributeComponent* AttributeComp = URLAttributeComponent::GetAttributes(Bot);
 		if (ensure(AttributeComp) && AttributeComp->IsAlive()) {
 			NumOfAliveBots++;
@@ -440,7 +266,7 @@ void ARLGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoc
 				}
 			}
 
-			// track all the used spawn location
+			// Track all the used spawn location
 			//DrawDebugSphere(GetWorld(), QueryLocations[0], 50.f, 20, FColor::Blue, false, 60.0f);
 		}
 	}
@@ -452,10 +278,11 @@ void ARLGameModeBase::KillAll()
 	{
 		ARLAICharacter* Bot = *It;
 
-		// if (Bot->IsAlive())
+		// If (Bot->IsAlive())
 		URLAttributeComponent* AttributeComp = URLAttributeComponent::GetAttributes(Bot);
 		if (ensure(AttributeComp) && AttributeComp->IsAlive()) {
-			AttributeComp->Kill(this); // maybe pass player for kill credit
+			// TODO: Maybe pass player for kill credits
+			AttributeComp->Kill(this); 
 		}
 	}
 }

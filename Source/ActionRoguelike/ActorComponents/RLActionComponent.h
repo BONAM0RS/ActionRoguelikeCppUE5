@@ -9,7 +9,9 @@
 
 class URLAction;
 
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStateChanged, URLActionComponent*, OwningComp, URLAction*, Action);
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONROGUELIKE_API URLActionComponent : public UActorComponent
@@ -54,13 +56,13 @@ protected:
 	void ServerStopAction(AActor* Instigator, FName ActionName);
 
 public:
-	/* Returns first occurrence of action matching the class provided */
+	// Returns first occurrence of action matching the class provided
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	URLAction* GetAction(TSubclassOf<URLAction> ActionClass) const;
 
 public:
-	// You need add header include because it is not a pointer (that's why forward declaration is not enough),
-	// so compiler needs to know size of struct
+	/* You need add header include because it is not a pointer (that's why forward declaration is not enough),
+		so compiler needs to know size of struct */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
 	FGameplayTagContainer ActiveGameplayTags;
 	

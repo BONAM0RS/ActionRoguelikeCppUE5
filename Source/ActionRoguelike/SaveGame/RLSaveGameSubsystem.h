@@ -11,7 +11,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSaveGameSignature, class URLSaveG
 /**
  * Handles all saving/loading of game state and player data including transform
  */
-UCLASS(meta=(DisplayName="SaveGame Subsystem")) // name of node in blueprint
+// DisplayName is a name in blueprint
+UCLASS(meta=(DisplayName="SaveGame Subsystem")) 
 class ACTIONROGUELIKE_API URLSaveGameSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()

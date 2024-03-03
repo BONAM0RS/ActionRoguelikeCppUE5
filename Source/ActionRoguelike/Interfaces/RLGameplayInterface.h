@@ -19,8 +19,9 @@ class ACTIONROGUELIKE_API IRLGameplayInterface
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+	
 public:
-	//Called after the Actor state was restored from a SaveGame file
+	// Called after the Actor state was restored from a SaveGame file
 	UFUNCTION(BlueprintNativeEvent)
 	void OnActorLoaded();
 

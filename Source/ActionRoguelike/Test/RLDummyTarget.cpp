@@ -21,9 +21,9 @@ void ARLDummyTarget::PostInitializeComponents()
 
 void ARLDummyTarget::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	//if (Delta < 0.0f)
-	//{
+	// if (Delta < 0.0f)
+	// {
 		MeshComp->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
-	//}
+	// }
 }
 

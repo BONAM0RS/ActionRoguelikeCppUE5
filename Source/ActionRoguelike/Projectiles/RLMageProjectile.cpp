@@ -26,7 +26,7 @@ void ARLMageProjectile::PostInitializeComponents()
 void ARLMageProjectile::OnSphereComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// don't forget to add check of instigator on hit event
+	// Don't forget to add check of instigator on hit event
 	if (OtherActor != nullptr && OtherActor != GetInstigator())
 	{
 		URLActionComponent* ActionComp = Cast<URLActionComponent>(OtherActor->GetComponentByClass(URLActionComponent::StaticClass()));

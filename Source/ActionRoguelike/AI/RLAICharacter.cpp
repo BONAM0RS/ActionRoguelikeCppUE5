@@ -20,14 +20,11 @@ ARLAICharacter::ARLAICharacter()
 	AttributeComponent = CreateDefaultSubobject<URLAttributeComponent>("AttributeComp");
 	ActionComp = CreateDefaultSubobject<URLActionComponent>("ActionComp");
 
-	// Ensures we receive a controlled when spawned in the level by our gamemode
+	// Ensures we receive a controlled when spawned in the level by our game mode
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	// Enabled on mesh to react to incoming projectiles
 	GetMesh()->SetGenerateOverlapEvents(true);
-	
-	// Temp solution
-	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
 
 	MuzzleShotSocketName = "Muzzle_Front";
 	HitDamageParamName = "Damage";
@@ -76,14 +73,16 @@ void ARLAICharacter::MulticastPawnSeen_Implementation()
 
 void ARLAICharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	// we don't wanna damage yourself
+	// We don't wanna damage yourself
 	if (InstigatorActor == this) {
 		return;
 	}
-	SetTargetActor(InstigatorActor); // if AI damage another AI it will set target AI for AI
 	
-	// we wanna be sure we take any damage
-	//TODO: I think there are should be 2 function, like Damage & Heal based on Delta
+	// If AI damage another AI it will set target AI for AI
+	SetTargetActor(InstigatorActor); 
+
+	// TODO: I think there are should be 2 function, like Damage & Heal based on Delta
+	// We wanna be sure we take any damage
 	if (Delta >= 0.0f) {
 		return;
 	}
@@ -113,7 +112,8 @@ void ARLAICharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeCompon
 	// Is Dead
 	if (NewHealth <= 0.0f)
 	{
-		//ActiveHealthBarWidget->RemoveFromParent(); //maybe it should be here, but im not sure
+		// Maybe it should be here, but im not sure
+		// ActiveHealthBarWidget->RemoveFromParent(); 
 		
 		// Stop BT
 		AAIController* AIController = Cast<AAIController>(GetController());

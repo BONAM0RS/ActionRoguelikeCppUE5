@@ -35,9 +35,7 @@ ARLProjectileBase::ARLProjectileBase()
 
 	ImpactShakeInnerRadius = 0.0f;
 	ImpactShakeOuterRadius = 1500.0f;
-
-	//TODO: SetReplicates called on non-initialized actor. Directly setting bReplicates is the correct procedure for pre-init actors.
-	// SetReplicates(true);
+	
 	bReplicates = true;
 }
 

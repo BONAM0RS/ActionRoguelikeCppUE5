@@ -58,8 +58,10 @@ void ARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Check review video on 'Life EXE' channel
-	// https://youtu.be/dUmXk-p43oo?si=zljlT5zBWL-nnKJy
+	/*
+	TODO: Check review video on 'Life EXE' channel
+	https://youtu.be/dUmXk-p43oo?si=zljlT5zBWL-nnKJy
+	*/
 
 	// MOVEMENT
 	PlayerInputComponent->BindAxis("MoveForward", this, &ARLCharacter::MoveForward);
@@ -77,13 +79,13 @@ void ARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ARLCharacter::SprintStop);
 
 	// Attack
-	// Maybe later add Secondary Attack (some big shot with splash maybe), rename BlackHole to "Ultimate Attack", Dash to smth 
+	// TODO: Maybe later add Secondary Attack (some big shot with splash maybe), rename BlackHole to "Ultimate Attack", Dash to smth 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ARLCharacter::PrimaryAttack);
 
-	// rework into teleport ability to place where is projectile maybe
+	// TODO: Rework into teleport ability to place where is projectile maybe
 	PlayerInputComponent->BindAction("DashAttack", IE_Pressed, this, &ARLCharacter::DashAttack);
 
-	// rework to black hole where projectile hit maybe
+	// TODO: Rework to black hole where projectile hit maybe
 	PlayerInputComponent->BindAction("BlackHoleAttack", IE_Pressed, this, &ARLCharacter::BlackHoleAttack);
 
 	//Interact
@@ -171,10 +173,10 @@ void ARLCharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponen
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		DisableInput(PlayerController);
 
-		// disable capsule
+		// Disable capsule
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		// destroy 
+		// Destroy 
 		SetLifeSpan(10.0f);
 	}
 }
@@ -192,10 +194,10 @@ void ARLCharacter::HealSelf(float Amount)
 
 FVector ARLCharacter::GetPawnViewLocation() const
 {
-	//It's ok for first person, but not third person with aim crosshair in center of screen
-	//return Super::GetPawnViewLocation();
+	// It's ok for first person, but not third person with aim crosshair in center of screen
+	// return Super::GetPawnViewLocation();
 
-	// used in GetActorEyesViewPoint
+	// Used in GetActorEyesViewPoint
 	return CameraComponent->GetComponentLocation();
 }
 

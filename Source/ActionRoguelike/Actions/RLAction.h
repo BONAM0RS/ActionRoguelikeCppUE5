@@ -23,7 +23,6 @@ public:
 };
 
 
-//TODO: should be abstract
 UCLASS(Blueprintable)
 class ACTIONROGUELIKE_API URLAction : public UObject
 {
@@ -54,7 +53,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	URLActionComponent* GetOwningComponent() const;
 	
-	// just to get rid of typing GetWorld()->GetTimerManager().SetTimer/ClearTimer
+	// Just to get rid of typing GetWorld()->GetTimerManager().SetTimer/ClearTimer
 	void SetWorldTimer(FTimerHandle& InOutHandle, FTimerDelegate const& InDelegate, float InRate, bool InbLoop, float InFirstDelay = -1.f);
 	void ClearWorldTimer(FTimerHandle& InHandle);
 
@@ -63,7 +62,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Config | Action")
 	bool bAutoStart;
 
-	//TODO: replace this with Tag to not write FName each time
+	// TODO: Maybe replace this with Tag to not write FName each time
 	UPROPERTY(EditDefaultsOnly, Category = "Config | Action")
 	FName ActionName;
 
