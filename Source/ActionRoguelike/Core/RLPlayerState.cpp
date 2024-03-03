@@ -69,7 +69,7 @@ bool ARLPlayerState::UpdatePersonalRecord(float NewTime)
 
 void ARLPlayerState::AddCredits(int32 Delta)
 {
-	if (!ensure(Delta > 0.0f)) {
+	if (!ensure(Delta >= 0.0f)) {
 		return;
 	}
 
