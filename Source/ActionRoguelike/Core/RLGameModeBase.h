@@ -101,7 +101,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Config | Powerups")
 	int32 DesiredPowerupCount;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Config | AI")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config | AI")
 	bool bSpawnBots;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Config | AI")

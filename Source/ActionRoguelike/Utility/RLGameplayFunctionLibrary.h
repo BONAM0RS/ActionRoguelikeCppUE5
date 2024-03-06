@@ -23,5 +23,5 @@ public:
 	// If parameter is reference '&' then it will create output pin in blueprint node
 	UFUNCTION(BlueprintCallable, Category = "GameplayLibrary")
 	static bool ApplyDirectionalDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount,
-		const FHitResult& HitResult);
+		const FHitResult& HitResult, float ImpulsePower = 300000.f);
 };

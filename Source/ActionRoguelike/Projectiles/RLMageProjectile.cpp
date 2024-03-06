@@ -54,6 +54,16 @@ void ARLMageProjectile::OnSphereComponentBeginOverlap(UPrimitiveComponent* Overl
 	}
 }
 
+void ARLMageProjectile::OnSphereComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherComp != nullptr && OtherComp->IsSimulatingPhysics()) {
+		URLGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, Hit, 100000.f);
+	}
+
+	Super::OnSphereComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
+}
+
 void ARLMageProjectile::SetDamageAmount(float NewDamageAmount)
 {
 	DamageAmount = NewDamageAmount;

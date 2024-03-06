@@ -20,7 +20,7 @@ bool URLGameplayFunctionLibrary::ApplyDamage(AActor* DamageCauser, AActor* Targe
 }
 
 bool URLGameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount,
-	const FHitResult& HitResult)
+	const FHitResult& HitResult, float ImpulsePower)
 {
 	if (ApplyDamage(DamageCauser, TargetActor, DamageAmount))
 	{
@@ -31,7 +31,7 @@ bool URLGameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AA
 			FVector Direction = HitResult.TraceEnd - HitResult.TraceStart;
 			Direction.Normalize();
 			
-			HitComp->AddImpulseAtLocation(Direction * 300000.f, HitResult.ImpactPoint, HitResult.BoneName);
+			HitComp->AddImpulseAtLocation(Direction * ImpulsePower, HitResult.ImpactPoint, HitResult.BoneName);
 		}
 		return true;
 	}

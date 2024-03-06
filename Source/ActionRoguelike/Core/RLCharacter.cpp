@@ -83,7 +83,7 @@ void ARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ARLCharacter::SprintStop);
 
 	// Attack
-	// TODO: Maybe later add Secondary Attack (some big shot with splash maybe), rename BlackHole to "Ultimate Attack", Dash to smth 
+	// TODO: Maybe later add Secondary Attack (some big shot with splash maybe, for now its Parry), rename BlackHole to "Ultimate Attack", Dash to smth 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ARLCharacter::PrimaryAttack);
 
 	// TODO: Rework into teleport ability to place where is projectile maybe
