@@ -11,6 +11,7 @@
 #include "ActionRoguelike/Utility/RLGameplayFunctionLibrary.h"
 #include "ActionRoguelike/Actions/RLAction_Effect.h"
 #include "ActionRoguelike/Components/RLActionComponent.h"
+#include "ActionRoguelike/Core/RLCharacter.h"
 
 
 ARLMageProjectile::ARLMageProjectile()
@@ -48,7 +49,26 @@ void ARLMageProjectile::OnSphereComponentBeginOverlap(UPrimitiveComponent* Overl
 			// Is Server?
 			if (ActionComp && HasAuthority())
 			{
-				ActionComp->AddAction(BurningActionEffectClass, GetInstigator());
+				static FGameplayTag BurningTag = FGameplayTag::RequestGameplayTag("Status.Burning");
+				if (!ActionComp->ActiveGameplayTags.HasTag(BurningTag))
+				{
+					ActionComp->AddAction(BurningActionEffectClass, GetInstigator());
+				}
+
+				
+				int randomNum = FMath::RandRange(0,4);
+				if (randomNum == 4)
+				{
+					static FGameplayTag StunnedTag = FGameplayTag::RequestGameplayTag("Status.Stunned");
+					if (!ActionComp->ActiveGameplayTags.HasTag(StunnedTag))
+					{
+						// If it's player
+						if (Cast<ARLCharacter>(OtherActor))
+						{
+							ActionComp->AddAction(StunningActionEffectClass, GetInstigator());
+						}
+					}
+				}
 			}
 		}
 	}

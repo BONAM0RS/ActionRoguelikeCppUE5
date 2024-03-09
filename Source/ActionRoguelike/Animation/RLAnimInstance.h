@@ -11,6 +11,7 @@
 #include "RLAnimInstance.generated.h"
 
 
+class URLAction_Effect;
 class URLActionComponent;
 
 UCLASS()
@@ -30,5 +31,7 @@ protected:
 	// Is Pawn Stunned based on GameplayTag data
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	bool bIsStunned;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config")
+	TSubclassOf<URLAction_Effect> StunningActionEffectClass;
 };

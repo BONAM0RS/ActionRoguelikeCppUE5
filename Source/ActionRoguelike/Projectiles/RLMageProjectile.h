@@ -46,4 +46,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Config")
 	TSubclassOf<URLAction_Effect> BurningActionEffectClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config")
+	TSubclassOf<URLAction_Effect> StunningActionEffectClass;
 };
