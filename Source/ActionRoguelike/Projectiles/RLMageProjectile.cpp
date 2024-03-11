@@ -20,6 +20,8 @@ ARLMageProjectile::ARLMageProjectile()
 	InitialLifeSpan = 10.f;
 
 	DamageAmount = 20.0f;
+
+	StunChance = 0.0f;
 }
 
 void ARLMageProjectile::PostInitializeComponents()
@@ -55,9 +57,9 @@ void ARLMageProjectile::OnSphereComponentBeginOverlap(UPrimitiveComponent* Overl
 					ActionComp->AddAction(BurningActionEffectClass, GetInstigator());
 				}
 
-				
-				int randomNum = FMath::RandRange(0,4);
-				if (randomNum == 4)
+				// Random num between 0.0 and 1.0
+				float RandomValue = FMath::FRand();
+				if (StunChance > 0.0f && RandomValue <= StunChance)
 				{
 					static FGameplayTag StunnedTag = FGameplayTag::RequestGameplayTag("Status.Stunned");
 					if (!ActionComp->ActiveGameplayTags.HasTag(StunnedTag))

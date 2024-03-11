@@ -30,7 +30,7 @@ protected:
 	  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
 
 	virtual void OnSphereComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		FVector NormalImpulse, const FHitResult& Hit);
+		FVector NormalImpulse, const FHitResult& Hit) override;
 
 public:
 	void SetDamageAmount(float NewDamageAmount);
@@ -49,4 +49,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Config")
 	TSubclassOf<URLAction_Effect> StunningActionEffectClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Config")
+	float StunChance;
 };

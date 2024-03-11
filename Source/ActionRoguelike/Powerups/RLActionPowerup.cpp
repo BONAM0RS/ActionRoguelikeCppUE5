@@ -9,6 +9,10 @@
 
 #include "ActionRoguelike/Actions/RLAction.h"
 #include "ActionRoguelike/Components/RLActionComponent.h"
+#include "ActionRoguelike/Components/RLAttributeComponent.h"
+
+
+#define LOCTEXT_NAMESPACE "InteractableActors"
 
 
 ARLActionPowerup::ARLActionPowerup()
@@ -40,3 +44,20 @@ void ARLActionPowerup::Interact_Implementation(APawn* InstigatorPawn)
 		HideAndCooldownPowerup();
 	}
 }
+
+FText ARLActionPowerup::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	URLActionComponent* ActionComp = Cast<URLActionComponent>(InstigatorPawn->GetComponentByClass(URLActionComponent::StaticClass()));
+	if (ActionComp != nullptr)
+	{
+		if (ActionComp->GetAction(ActionToGrant) != nullptr)
+		{
+			return LOCTEXT("ActionPowerup_Warning", "Black Hole action already known.");
+		}
+	}
+	
+	return LOCTEXT("ActionPowerup_InteractMessage", "Black Hole ability. It costs 5 rage. Use in direction with physic objects.");
+}
+
+
+#undef LOCTEXT_NAMESPACE

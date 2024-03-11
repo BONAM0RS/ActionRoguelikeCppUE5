@@ -39,7 +39,7 @@ void URLInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	APawn* PawnOwner = Cast<APawn>(GetOwner());
 	if (PawnOwner->IsLocallyControlled())
 	{
-		// Better replace with timer instead call it on tick
+		//TODO: Better replace with timer instead call it on tick
 		FindBestInteractable();
 	}
 }
@@ -111,6 +111,7 @@ void URLInteractionComponent::FindBestInteractable()
 		if (DefaultWidgetInstance != nullptr)
 		{
 			DefaultWidgetInstance->RemoveFromParent();
+			DefaultWidgetInstance = nullptr;
 		}
 	}
 }

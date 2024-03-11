@@ -22,6 +22,8 @@ public:
 	ARLActionPowerup();
 
 	void Interact_Implementation(APawn* InstigatorPawn) override;
+
+	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
 	
 protected:
 	UPROPERTY(EditAnywhere, Category = "Config")

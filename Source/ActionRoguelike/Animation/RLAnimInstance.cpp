@@ -20,29 +20,37 @@ void URLAnimInstance::NativeInitializeAnimation()
 	{
 		ActionComp = Cast<URLActionComponent>(OwningActor->GetComponentByClass(URLActionComponent::StaticClass()));
 	}
+
+	bIsStunned = false;
+	bIsTimeToEndStun = false;
+	StunAnimDuration = 0.0f;
+
+	if (StunAnimSequence != nullptr)
+	{
+		StunAnimDuration = StunAnimSequence->GetPlayLength();
+	}
 }
 
 void URLAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
-
-	static FGameplayTag StunnedTag = FGameplayTag::RequestGameplayTag("Status.Stunned");
+	
 	if (ActionComp != nullptr)
 	{
-		//bIsStunned = ActionComp->ActiveGameplayTags.HasTag(StunnedTag);
-		if (ActionComp->ActiveGameplayTags.HasTag(StunnedTag))
+		static FGameplayTag StunnedTag = FGameplayTag::RequestGameplayTag("Status.Stunned");
+		bIsStunned = ActionComp->ActiveGameplayTags.HasTag(StunnedTag);
+		if (bIsStunned)
 		{
-			//TODO: replace call of get time remaning to blueprint and use it in transition check to end stun effect 
 			URLAction_Effect* StunEffect = Cast<URLAction_Effect>(ActionComp->GetAction(StunningActionEffectClass));
-			float TimeRemaining = StunEffect->GetTimeRemaining();
-			if (TimeRemaining <= 1.6f)
+			if (StunEffect->GetTimeRemaining() <= StunAnimDuration)
 			{
-				bIsStunned = false;
+				bIsTimeToEndStun = true;
 			}
-			else
-			{
-				bIsStunned = true;
-			}
+		}
+		else
+		{
+			bIsTimeToEndStun = false;
 		}
 	}
 }
+

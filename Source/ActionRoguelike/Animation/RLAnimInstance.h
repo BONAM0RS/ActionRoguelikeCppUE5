@@ -25,13 +25,22 @@ protected:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Animation")
+	UPROPERTY(BlueprintReadOnly, Category = "Config")
 	URLActionComponent* ActionComp;
-	
-	// Is Pawn Stunned based on GameplayTag data
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
-	bool bIsStunned;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Config")
 	TSubclassOf<URLAction_Effect> StunningActionEffectClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config")
+	UAnimSequenceBase* StunAnimSequence;
+	
+	// Is Pawn Stunned based on GameplayTag data
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Config")
+	bool bIsStunned;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Config")
+	bool bIsTimeToEndStun;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Config")
+	float StunAnimDuration;
 };

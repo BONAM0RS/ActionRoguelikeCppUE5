@@ -38,7 +38,9 @@ void ARLPowerupBase::Interact_Implementation(APawn* InstigatorPawn)
 
 FText ARLPowerupBase::GetInteractText_Implementation(APawn* InstigatorPawn)
 {
-	return FText::GetEmpty();
+	//return FText::GetEmpty();
+	FText DefaultText = FText::FromString(TEXT("Default Interaction Message")); 
+	return DefaultText;
 }
 
 void ARLPowerupBase::ShowPowerup()
