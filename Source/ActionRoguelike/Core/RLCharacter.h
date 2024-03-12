@@ -38,18 +38,17 @@ protected:
 protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
-
-	void SprintStart();
+	
 	void SprintStop();
-
-	void PrimaryAttack();
-	void DashAttack();
-	void BlackHoleAttack();
 	
 	void PrimaryInteract();
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, URLAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	UFUNCTION()
+	void OnDiedCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 	void HideHitDamageEffect();
 

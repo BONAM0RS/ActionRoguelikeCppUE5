@@ -50,10 +50,16 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void TogglePauseMenu();
 
+private:
+	void CreatePauseMenu();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> PauseMenuClass;
 
 	UPROPERTY()
 	UUserWidget* PauseMenuInstance;
+
+private:
+	bool bInPause;
 };

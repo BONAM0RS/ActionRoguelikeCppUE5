@@ -42,9 +42,8 @@ bool URLAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 		Delta *= DamageMultiplier;
 	}
 	
-	float OldCurrentHealth = CurrentHealth;
 	float NewCurrentHealth = FMath::Clamp(CurrentHealth + Delta, 0.0f, MaxHealth);
-	float RealDelta = NewCurrentHealth - OldCurrentHealth;
+	float RealDelta = NewCurrentHealth - CurrentHealth;
 
 	// Is Server?
 	if (GetOwner()->HasAuthority())

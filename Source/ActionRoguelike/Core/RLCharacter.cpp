@@ -62,38 +62,41 @@ void ARLCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	/*
-	TODO: Check review video on 'Life EXE' channel
-	https://youtu.be/dUmXk-p43oo?si=zljlT5zBWL-nnKJy
-	*/
-
 	// MOVEMENT
 	PlayerInputComponent->BindAxis("MoveForward", this, &ARLCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARLCharacter::MoveRight);
+	
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 
-	// ROTATION CONTROL
+	// ROTATION
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
-	// ACTIONS
-	// Movement
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-
-	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ARLCharacter::SprintStart);
-	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ARLCharacter::SprintStop);
-
-	// Attack
-	// TODO: Maybe later add Secondary Attack (some big shot with splash maybe, for now its Parry), rename BlackHole to "Ultimate Attack", Dash to smth 
-	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ARLCharacter::PrimaryAttack);
-
-	// TODO: Rework into teleport ability to place where is projectile maybe
-	PlayerInputComponent->BindAction("DashAttack", IE_Pressed, this, &ARLCharacter::DashAttack);
-
-	// TODO: Rework to black hole where projectile hit maybe
-	PlayerInputComponent->BindAction("BlackHoleAttack", IE_Pressed, this, &ARLCharacter::BlackHoleAttack);
-
-	//Interact
+	// INTERACT
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ARLCharacter::PrimaryInteract);
+	
+	// ACTIONS
+	const TMap<FName, FName> PressedActions = {
+			{ "SprintAction", "Sprint" },
+			{ "PrimaryAction", "MageAttack" },
+			{ "AdditionalAction", "DashAttack" },
+			{ "UltimateAction", "BlackHoleAttack" }
+		};
+
+	for (const auto& [InputActionName, ActionName] : PressedActions)
+	{
+		FInputActionBinding InputActionBinding(InputActionName, IE_Pressed);
+		InputActionBinding.ActionDelegate.GetDelegateForManualSet().BindLambda(
+			[&, ActionName]()
+			{
+				ActionComp->StartActionByName(this, ActionName);
+			});
+		PlayerInputComponent->AddActionBinding(InputActionBinding);
+	}
+
+	// SecondaryAction implemented in blueprints (Parry)
+	
+	PlayerInputComponent->BindAction("SprintAction", IE_Released, this, &ARLCharacter::SprintStop);
 }
 
 void ARLCharacter::MoveForward(float Value)
@@ -116,29 +119,9 @@ void ARLCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
-void ARLCharacter::SprintStart()
-{
-	ActionComp->StartActionByName(this, "Sprint");
-}
-
 void ARLCharacter::SprintStop()
 {
 	ActionComp->StopActionByName(this, "Sprint");
-}
-
-void ARLCharacter::PrimaryAttack()
-{
-	ActionComp->StartActionByName(this, "PrimaryAttack");
-}
-
-void ARLCharacter::DashAttack()
-{
-	ActionComp->StartActionByName(this, "DashAttack");
-}
-
-void ARLCharacter::BlackHoleAttack()
-{
-	ActionComp->StartActionByName(this, "BlackHoleAttack");
 }
 
 void ARLCharacter::PrimaryInteract()
@@ -176,13 +159,20 @@ void ARLCharacter::OnHealthChanged(AActor* InstigatorActor, URLAttributeComponen
 	{
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		DisableInput(PlayerController);
-
-		// Disable capsule
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
+		// Disable capsule on hit event in case player died in jump for example, so he will not fall through the textures
+		GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ARLCharacter::OnDiedCapsuleHit);
 
 		// Destroy 
 		SetLifeSpan(10.0f);
 	}
+}
+
+void ARLCharacter::OnDiedCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
+{
+	GetCapsuleComponent()->OnComponentHit.RemoveDynamic(this, &ARLCharacter::OnDiedCapsuleHit);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ARLCharacter::HideHitDamageEffect()

@@ -26,7 +26,7 @@ void URLAction::Initialize(URLActionComponent* NewActionComp)
 
 void URLAction::StartAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp,Log,TEXT("Running: %s"), *GetNameSafe(this));
+	//UE_LOG(LogTemp,Log,TEXT("Running: %s"), *GetNameSafe(this));
 	//LogOnScreen(this, FString::Printf(TEXT("Started: %s"), *ActionName.ToString()), FColor::Green);
 	
 	ActionComp->ActiveGameplayTags.AppendTags(GrantsTags);
@@ -34,23 +34,23 @@ void URLAction::StartAction_Implementation(AActor* Instigator)
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
 
-	if (GetOwningComponent()->GetOwnerRole() == ROLE_Authority)
+	if (ActionComp->GetOwnerRole() == ROLE_Authority)
 	{
 		TimeStarted = GetWorld()->TimeSeconds;
 	}
 
-	GetOwningComponent()->OnActionStarted.Broadcast(GetOwningComponent(), this);
+	ActionComp->OnActionStarted.Broadcast(ActionComp, this);
 }
 
 void URLAction::StopAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp,Log,TEXT("Stop: %s"), *GetNameSafe(this));
+	//UE_LOG(LogTemp,Log,TEXT("Stop: %s"), *GetNameSafe(this));
 	//LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::White);
 	
 	ActionComp->ActiveGameplayTags.RemoveTags(GrantsTags);
 	RepData.bIsRunning = false;
 
-	GetOwningComponent()->OnActionStopped.Broadcast(GetOwningComponent(), this);
+	ActionComp->OnActionStopped.Broadcast(ActionComp, this);
 }
 
 bool URLAction::CanStart_Implementation(AActor* Instigator)

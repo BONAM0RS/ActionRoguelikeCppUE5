@@ -16,6 +16,8 @@ class ACTIONROGUELIKE_API ARLDashProjectile : public ARLProjectileBase
 {
 	GENERATED_BODY()
 
+	// TODO: Rework into teleport ability to place where is projectile maybe
+	
 public:
 	ARLDashProjectile();
 

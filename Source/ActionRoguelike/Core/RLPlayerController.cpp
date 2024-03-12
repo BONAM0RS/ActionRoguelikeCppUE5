@@ -12,6 +12,7 @@
 ARLPlayerController::ARLPlayerController()
 	: PauseMenuInstance(nullptr)
 {
+	bInPause = false;
 }
 
 void ARLPlayerController::SetPawn(APawn* InPawn)
@@ -39,31 +40,40 @@ void ARLPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("PauseMenu", IE_Pressed, this, &ARLPlayerController::TogglePauseMenu);
+	InputComponent->BindAction("PauseMenu", IE_Pressed, this, &ARLPlayerController::TogglePauseMenu).bExecuteWhenPaused = true;
 }
 
 void ARLPlayerController::TogglePauseMenu()
 {
-	// Disable Pause
-	if (PauseMenuInstance != nullptr && PauseMenuInstance->IsInViewport())
+	bInPause = !bInPause;
+	
+	if (!PauseMenuInstance)
 	{
-		PauseMenuInstance->RemoveFromParent();
-		PauseMenuInstance = nullptr;
-
-		bShowMouseCursor = false;
+		CreatePauseMenu();
+	}
+	
+	SetPause(bInPause);
+	bShowMouseCursor = bInPause;
+	
+	if (bInPause)
+	{
+		FInputModeGameAndUI InputModeGameAndUI;
+		InputModeGameAndUI.SetHideCursorDuringCapture(false);
+		SetInputMode(InputModeGameAndUI);
+		PauseMenuInstance->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
 		SetInputMode(FInputModeGameOnly());
-		return;
+		PauseMenuInstance->SetVisibility(ESlateVisibility::Collapsed);
 	}
+}
 
-	// Enable Pause
+void ARLPlayerController::CreatePauseMenu()
+{
 	PauseMenuInstance = CreateWidget<UUserWidget>(this, PauseMenuClass);
-	if (PauseMenuInstance != nullptr)
-	{
-		PauseMenuInstance->AddToViewport(100);
-
-		bShowMouseCursor = true;
-		SetInputMode(FInputModeUIOnly());
-	}
+	PauseMenuInstance->AddToViewport(100);
+	PauseMenuInstance->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 

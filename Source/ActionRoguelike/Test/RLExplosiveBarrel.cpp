@@ -55,9 +55,9 @@ void ARLExplosiveBarrel::OnMeshComponentHit(UPrimitiveComponent* HitComponent, A
 	FVector NormalImpulse, const FHitResult& Hit)
 {
 	RadialForceComponent->FireImpulse();
-	UE_LOG(LogTemp, Warning, TEXT("%S: OtherActor = %s, game time = %f"), __FUNCTION__, *GetNameSafe(OtherActor), GetWorld()->TimeSeconds);
+	//UE_LOG(LogTemp, Warning, TEXT("%S: OtherActor = %s, game time = %f"), __FUNCTION__, *GetNameSafe(OtherActor), GetWorld()->TimeSeconds);
 
-	FString Message = FString::Printf(TEXT("Hit at location: %s"), *Hit.ImpactPoint.ToString());
-	DrawDebugString(GetWorld(), Hit.ImpactPoint, Message, nullptr, FColor::Blue, 5.0f, true);
+	// FString Message = FString::Printf(TEXT("Hit at location: %s"), *Hit.ImpactPoint.ToString());
+	// DrawDebugString(GetWorld(), Hit.ImpactPoint, Message, nullptr, FColor::Blue, 5.0f, true);
 }
 
