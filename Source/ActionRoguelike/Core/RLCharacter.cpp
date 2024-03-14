@@ -188,11 +188,14 @@ void ARLCharacter::HealSelf(float Amount)
 
 FVector ARLCharacter::GetPawnViewLocation() const
 {
-	// It's ok for first person, but not third person with aim crosshair in center of screen
-	// return Super::GetPawnViewLocation();
+	// Offset to not hit the wall if camera collide with it
+	FVector Offset = CameraComponent->GetForwardVector() * 100.f;
+	return CameraComponent->GetComponentLocation() + Offset;
+}
 
-	// Used in GetActorEyesViewPoint
-	return CameraComponent->GetComponentLocation();
+UCameraComponent* ARLCharacter::GetCameraComponent() const
+{
+	return CameraComponent;
 }
 
 float ARLCharacter::GetDamageAmount()

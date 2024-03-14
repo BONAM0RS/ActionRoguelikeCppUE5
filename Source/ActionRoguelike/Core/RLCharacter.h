@@ -59,6 +59,8 @@ public:
 
 	virtual FVector GetPawnViewLocation() const override;
 
+	UCameraComponent* GetCameraComponent() const;
+
 	float GetDamageAmount();
 
 protected:

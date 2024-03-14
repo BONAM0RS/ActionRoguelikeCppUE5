@@ -227,7 +227,7 @@ void ARLGameModeBase::OnBotSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper
 			UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
 			if (AssetManager)
 			{
-				LogOnScreen(this, "Loading monster ...", FColor::Green);
+				//LogOnScreen(this, "Loading monster ...", FColor::Green);
 				
 				TArray<FName> Bundles;
 
@@ -246,7 +246,7 @@ void ARLGameModeBase::OnBotSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper
 
 void ARLGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation)
 {
-	LogOnScreen(this, "Finished loading.", FColor::Green);
+	//LogOnScreen(this, "Finished loading.", FColor::Green);
 	
 	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
 	if (AssetManager)
@@ -257,7 +257,7 @@ void ARLGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoc
 			AActor* NewBot = GetWorld()->SpawnActor<AActor>(MonsterDataAsset->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
 			if (NewBot != nullptr)
 			{
-				LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(MonsterDataAsset)));
+				LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(MonsterDataAsset)), FColor::Green);
 	
 				// Grant special actions, buffs, etc.
 				URLActionComponent* ActionComp = Cast<URLActionComponent>(NewBot->GetComponentByClass(URLActionComponent::StaticClass()));
@@ -269,9 +269,6 @@ void ARLGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoc
 					}
 				}
 			}
-
-			// Track all the used spawn location
-			//DrawDebugSphere(GetWorld(), QueryLocations[0], 50.f, 20, FColor::Blue, false, 60.0f);
 		}
 	}
 }

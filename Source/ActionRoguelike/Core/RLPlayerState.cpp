@@ -20,7 +20,6 @@ void ARLPlayerState::SavePlayerState_Implementation(URLSaveGame* SaveGameObject)
 		// Gather all relevant data for player
 		FPlayerSaveData SaveData;
 		SaveData.Credits = Credits;
-		SaveData.PersonalRecordTime = PersonalRecordTime;
 		// Stored as FString for simplicity (original Steam ID is uint64)
 		SaveData.PlayerID = GetUniqueId().ToString();
 
@@ -45,8 +44,6 @@ void ARLPlayerState::LoadPlayerState_Implementation(URLSaveGame* SaveGameObject)
 		{
 			// Makes sure we trigger credits changed event
 			AddCredits(FoundData->Credits);
-
-			PersonalRecordTime = FoundData->PersonalRecordTime;
 		}
 		else
 		{

@@ -37,7 +37,6 @@ struct FPlayerSaveData
 	FPlayerSaveData()
 	{
 		Credits = 0;
-		PersonalRecordTime = 0.0f;
 		Location = FVector::ZeroVector;
 		Rotation = FRotator::ZeroRotator;
 		bResumeAtTransform = true;
@@ -49,10 +48,6 @@ struct FPlayerSaveData
 
 	UPROPERTY()
 	int32 Credits;
-
-	/* Longest survival time */
-	UPROPERTY()
-	float PersonalRecordTime;
 
 	/* Location if player was alive during save */
 	UPROPERTY()

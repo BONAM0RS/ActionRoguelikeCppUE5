@@ -8,6 +8,7 @@
 
 #include "ActionRoguelike/Core/RLCharacter.h"
 #include "ActionRoguelike/Projectiles/RLMageProjectile.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -30,6 +31,18 @@ void URLAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
 	ACharacter* Character = Cast<ACharacter>(Instigator);
 	if (Character != nullptr)
 	{
+		// Rotate character in attack direction
+		ARLCharacter* PlayerCharacter = Cast<ARLCharacter>(Character);
+		if (PlayerCharacter)
+		{
+			FVector CameraForwardVector = PlayerCharacter->GetCameraComponent()->GetForwardVector();
+			FRotator CameraRotation = CameraForwardVector.Rotation();
+			CameraRotation.Pitch = 0.0f;
+			CameraRotation.Roll = 0.0f;
+			
+			PlayerCharacter->SetActorRotation(CameraRotation);
+		}
+		
 		Character->PlayAnimMontage(AttackAnim);
 
 		UGameplayStatics::SpawnEmitterAttached(CastingEffect, Character->GetMesh(), MuzzleSocketName,
@@ -76,7 +89,7 @@ FVector URLAction_ProjectileAttack::CalculateProjectileTargetPoint(ACharacter* I
 {
 	FVector TraceStart = InstigatorCharacter->GetPawnViewLocation();
 	FVector TraceEnd = TraceStart + (InstigatorCharacter->GetControlRotation().Vector() * TraceLength);
-
+	
 	FCollisionObjectQueryParams CollisionObjectQueryParams;
 	CollisionObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 	CollisionObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
