@@ -52,21 +52,6 @@ void ARLPlayerState::LoadPlayerState_Implementation(URLSaveGame* SaveGameObject)
 	}
 }
 
-bool ARLPlayerState::UpdatePersonalRecord(float NewTime)
-{
-	// Higher time is better
-	if (NewTime > PersonalRecordTime)
-	{
-		float OldRecord = PersonalRecordTime;
-		PersonalRecordTime = NewTime;
-		OnRecordTimeChanged.Broadcast(this, PersonalRecordTime, OldRecord);
-
-		return true;
-	}
-
-	return false;
-}
-
 void ARLPlayerState::AddCredits(int32 Delta)
 {
 	if (!ensure(Delta >= 0.0f)) {

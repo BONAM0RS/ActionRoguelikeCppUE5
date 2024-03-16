@@ -303,13 +303,6 @@ void ARLGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		float RespawnDelay = 2.0f;
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
 
-		// Store time if it was better than previous record
-		ARLPlayerState* PlayerState = PlayerCharacter->GetPlayerState<ARLPlayerState>();
-		if (PlayerState)
-		{
-			PlayerState->UpdatePersonalRecord(GetWorld()->TimeSeconds);
-		}
-
 		URLSaveGameSubsystem* SaveGameSubsystem= GetGameInstance()->GetSubsystem<URLSaveGameSubsystem>();
 		// Immediately auto save on death
 		SaveGameSubsystem->WriteSaveGame();
