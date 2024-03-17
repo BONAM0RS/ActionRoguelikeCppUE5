@@ -13,6 +13,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLBTTaskNode_RangeAttack)
+
 
 URLBTTaskNode_RangeAttack::URLBTTaskNode_RangeAttack()
 {

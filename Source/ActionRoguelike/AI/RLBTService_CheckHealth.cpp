@@ -10,6 +10,8 @@
 #include "ActionRoguelike/Components/RLAttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLBTService_CheckHealth)
+
 
 URLBTService_CheckHealth::URLBTService_CheckHealth()
 {

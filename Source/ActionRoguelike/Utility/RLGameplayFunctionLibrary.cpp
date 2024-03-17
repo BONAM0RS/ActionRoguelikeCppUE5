@@ -8,6 +8,8 @@
 
 #include "ActionRoguelike/Components/RLAttributeComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLGameplayFunctionLibrary)
+
 
 bool URLGameplayFunctionLibrary::ApplyDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount)
 {

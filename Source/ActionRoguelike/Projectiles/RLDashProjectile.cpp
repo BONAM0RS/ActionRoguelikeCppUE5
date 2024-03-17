@@ -10,6 +10,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLDashProjectile)
+
 
 ARLDashProjectile::ARLDashProjectile()
 	: TeleportDelay(0.2f),

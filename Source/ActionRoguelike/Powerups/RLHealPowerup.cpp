@@ -9,6 +9,7 @@
 #include "ActionRoguelike/Components/RLAttributeComponent.h"
 #include "ActionRoguelike/Core/RLPlayerState.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLHealPowerup)
 
 #define LOCTEXT_NAMESPACE "InteractableActors"
 

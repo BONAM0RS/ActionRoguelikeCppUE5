@@ -17,7 +17,7 @@
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "ActionRoguelike/ActionRoguelike.h"
 
-//#include UE_INLINE_GENERATED_CPP_BY_NAME(RLSaveGameSubsystem)
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLSaveGameSubsystem)
 
 
 void URLSaveGameSubsystem::Initialize(FSubsystemCollectionBase& Collection)

@@ -9,6 +9,8 @@
 #include "ActionRoguelike/Components/RLActionComponent.h"
 #include "GameFramework/GameStateBase.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLAction_Effect)
+
 URLAction_Effect::URLAction_Effect()
 	: Duration(0),
 	  Period(0)

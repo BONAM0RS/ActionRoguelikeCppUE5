@@ -10,7 +10,7 @@
 #include "ActionRoguelike/ActionRoguelike.h"
 #include "ActionRoguelike/Save/RLSaveGame.h"
 
-//#include UE_INLINE_GENERATED_CPP_BY_NAME(RLPlayerState)
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLPlayerState)
 
 
 void ARLPlayerState::SavePlayerState_Implementation(URLSaveGame* SaveGameObject)

@@ -11,6 +11,8 @@
 #include "ActionRoguelike/Components/RLActionComponent.h"
 #include "ActionRoguelike/Components/RLAttributeComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLActionPowerup)
+
 
 #define LOCTEXT_NAMESPACE "InteractableActors"
 

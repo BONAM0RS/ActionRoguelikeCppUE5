@@ -8,6 +8,8 @@ v* Third-person Action Roguelike game prototype made in Unreal Engine 5.3 as par
 
 #include "Net/UnrealNetwork.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLItemChest)
+
 
 ARLItemChest::ARLItemChest()
 {

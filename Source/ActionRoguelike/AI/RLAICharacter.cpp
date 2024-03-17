@@ -17,6 +17,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLAICharacter)
 
 ARLAICharacter::ARLAICharacter()
 {

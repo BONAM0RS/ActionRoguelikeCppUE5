@@ -10,6 +10,9 @@
 #include "ActionRoguelike/ActionRoguelike.h"
 #include "GameFramework/PlayerState.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLSaveGame)
+
+
 FPlayerSaveData* URLSaveGame::GetPlayerData(APlayerState* PlayerState)
 {
 	if (PlayerState == nullptr)

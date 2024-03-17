@@ -13,6 +13,9 @@
 #include "Kismet/GameplayStatics.h"
 
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLAction_ProjectileAttack)
+
+
 URLAction_ProjectileAttack::URLAction_ProjectileAttack()
 	: AttackAnim(nullptr),
 	  CastingEffect(nullptr)

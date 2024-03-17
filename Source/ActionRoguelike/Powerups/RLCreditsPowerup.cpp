@@ -8,6 +8,8 @@
 
 #include "ActionRoguelike/Core/RLPlayerState.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLCreditsPowerup)
+
 
 ARLCreditsPowerup::ARLCreditsPowerup()
 {

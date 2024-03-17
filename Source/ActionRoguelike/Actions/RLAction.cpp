@@ -10,6 +10,7 @@
 #include "ActionRoguelike/Components/RLActionComponent.h"
 #include "Net/UnrealNetwork.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLAction)
 
 URLAction::URLAction()
 	: ActionComp(nullptr),

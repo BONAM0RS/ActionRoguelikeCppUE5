@@ -14,6 +14,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLCharacter)
+
 
 ARLCharacter::ARLCharacter()
 {

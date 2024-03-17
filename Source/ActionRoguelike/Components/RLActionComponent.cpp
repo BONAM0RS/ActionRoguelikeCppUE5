@@ -11,6 +11,8 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLActionComponent)
+
 
 DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_ANDREW);
 

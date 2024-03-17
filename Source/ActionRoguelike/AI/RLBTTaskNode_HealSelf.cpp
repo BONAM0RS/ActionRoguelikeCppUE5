@@ -9,6 +9,8 @@
 #include "AIController.h"
 #include "ActionRoguelike/Components/RLAttributeComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLBTTaskNode_HealSelf)
+
 
 EBTNodeResult::Type URLBTTaskNode_HealSelf::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {

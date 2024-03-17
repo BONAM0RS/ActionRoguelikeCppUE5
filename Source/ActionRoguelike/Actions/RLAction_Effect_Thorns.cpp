@@ -10,6 +10,8 @@
 #include "ActionRoguelike/Components/RLAttributeComponent.h"
 #include "ActionRoguelike/Utility/RLGameplayFunctionLibrary.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLAction_Effect_Thorns)
+
 
 URLAction_Effect_Thorns::URLAction_Effect_Thorns()
 {

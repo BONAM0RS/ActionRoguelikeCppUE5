@@ -9,6 +9,8 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLBTService_CheckAttackRange)
+
 
 URLBTService_CheckAttackRange::URLBTService_CheckAttackRange()
 {

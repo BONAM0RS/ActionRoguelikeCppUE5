@@ -13,6 +13,8 @@
 #include "ActionRoguelike/Components/RLActionComponent.h"
 #include "ActionRoguelike/Core/RLCharacter.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLMageProjectile)
+
 
 ARLMageProjectile::ARLMageProjectile()
 {

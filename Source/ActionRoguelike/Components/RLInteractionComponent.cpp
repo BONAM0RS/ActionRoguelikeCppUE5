@@ -10,6 +10,7 @@
 #include "ActionRoguelike/UI/RLWorldUserWidget.h"
 #include "Blueprint/UserWidget.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLInteractionComponent)
 
 static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("su.InteractionDebugDraw"), false,
                                                            TEXT("Enable Debug Lines for Interact Component"), ECVF_Cheat);

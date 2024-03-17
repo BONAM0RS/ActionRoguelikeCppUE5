@@ -10,6 +10,8 @@
 #include "GameplayTagContainer.h"
 #include "ActionRoguelike/Components/RLActionComponent.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLAnimInstance)
+
 
 void URLAnimInstance::NativeInitializeAnimation()
 {

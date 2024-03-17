@@ -14,6 +14,8 @@
 #include "Sound/SoundCue.h"
 #include "LegacyCameraShake.h"
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(RLProjectileBase)
+
 
 ARLProjectileBase::ARLProjectileBase()
 {
