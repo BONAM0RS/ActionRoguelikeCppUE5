@@ -1,3 +1,9 @@
+# Resharper per user project options file
+ActionRoguelike.uproject.DotSettings
+
+# Visual Studio user specific files
+.vsconfig
+
 # intellij configs
 .idea/
 
