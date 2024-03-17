@@ -1,11 +1,8 @@
 # ActionRoguelike
 Third-person Action Roguelike game prototype made in Unreal Engine 5.3 as part of the Professional Game Development in C++ and Unreal Engine course by Tom Looman
 
+Gameplay video
 https://drive.google.com/file/d/1p4pR32CkRprYSrmjASACBnmG8mCRMQLU/view?usp=sharing
-
-https://youtu.be/I_PjXp3msuo?si=irDDMuTm8IlSZslp
-
-https://www.youtube.com/watch?v=I_PjXp3msuo&list=RDI_PjXp3msuo&start_radio=1
 
 ![](https://imgur.com/3EO2pLu.png)
 
