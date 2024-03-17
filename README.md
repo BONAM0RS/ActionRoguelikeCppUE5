@@ -3,6 +3,8 @@ Third-person Action Roguelike game prototype made in Unreal Engine 5.3 as part o
 
 https://drive.google.com/file/d/1p4pR32CkRprYSrmjASACBnmG8mCRMQLU/view?usp=sharing
 
+https://youtu.be/I_PjXp3msuo?si=irDDMuTm8IlSZslp
+
 ![](https://imgur.com/3EO2pLu.png)
 
 ![](https://imgur.com/sYK5D9z.png)
